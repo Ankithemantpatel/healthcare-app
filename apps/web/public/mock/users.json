@@ -1,0 +1,20 @@
+[
+  {
+    "id": "u1",
+    "username": "admin",
+    "password": "admin123",
+    "name": "Ava Morgan",
+    "email": "ava.morgan@medsync.ai",
+    "phone": "+1-555-0101",
+    "condition": "Hypertension"
+  },
+  {
+    "id": "u2",
+    "username": "patient1",
+    "password": "patient123",
+    "name": "Liam Chen",
+    "email": "liam.chen@medsync.ai",
+    "phone": "+1-555-0102",
+    "condition": "Asthma"
+  }
+]

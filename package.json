@@ -1,0 +1,25 @@
+{
+  "name": "healthcare-app",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "autoprefixer": "^10.4.27",
+    "eslint": "^8.0.0",
+    "postcss": "^8.5.9",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^4.2.2",
+    "turbo": "^1.10.0",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

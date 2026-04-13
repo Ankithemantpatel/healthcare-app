@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Dr. John Doe",
+    "specialty": "Cardiology",
+    "availability": "Mon-Fri",
+    "experienceYears": 14,
+    "rating": 4.8,
+    "consultationFee": 120,
+    "hospital": "Metro Heart Institute",
+    "image": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": 2,
+    "name": "Dr. Jane Smith",
+    "specialty": "Dermatology",
+    "availability": "Tue-Thu",
+    "experienceYears": 9,
+    "rating": 4.6,
+    "consultationFee": 90,
+    "hospital": "City Skin Clinic",
+    "image": "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": 3,
+    "name": "Dr. Michael Johnson",
+    "specialty": "Neurology",
+    "availability": "Mon-Wed-Fri",
+    "experienceYears": 18,
+    "rating": 4.9,
+    "consultationFee": 150,
+    "hospital": "NeuroCare Center",
+    "image": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=300&q=80"
+  },
+  {
+    "id": 4,
+    "name": "Dr. Sarah Williams",
+    "specialty": "Pediatrics",
+    "availability": "Daily",
+    "experienceYears": 11,
+    "rating": 4.7,
+    "consultationFee": 95,
+    "hospital": "Sunrise Children Hospital",
+    "image": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=300&q=80"
+  }
+]

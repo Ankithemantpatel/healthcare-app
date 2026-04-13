@@ -1,0 +1,22 @@
+[
+  {
+    "id": "a1",
+    "userId": "u1",
+    "doctor": "Dr. John Doe",
+    "date": "2026-04-18",
+    "time": "10:30",
+    "type": "Follow-up",
+    "reason": "Blood pressure review",
+    "status": "Confirmed"
+  },
+  {
+    "id": "a2",
+    "userId": "u1",
+    "doctor": "Dr. Jane Smith",
+    "date": "2026-04-22",
+    "time": "14:00",
+    "type": "Consultation",
+    "reason": "Skin allergy evaluation",
+    "status": "Pending"
+  }
+]

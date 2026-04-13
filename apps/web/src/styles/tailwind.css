@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--bg-1: #060a1a;
+		--bg-2: #0b1330;
+		--panel: #0f1b3f;
+		--panel-border: #203879;
+		--accent: #27d5ff;
+		--accent-2: #8c6bff;
+	}
+
+	body {
+		margin: 0;
+		min-height: 100vh;
+		font-family: "Poppins", "Segoe UI", sans-serif;
+		background:
+			radial-gradient(circle at 15% 10%, rgba(39, 213, 255, 0.24), transparent 45%),
+			radial-gradient(circle at 85% 20%, rgba(140, 107, 255, 0.22), transparent 44%),
+			linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+		color: #eef4ff;
+	}
+
+	*:focus-visible {
+		outline: 3px solid #67e8f9;
+		outline-offset: 3px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			scroll-behavior: auto !important;
+			transition-duration: 0.01ms !important;
+		}
+	}
+}
+
+@layer components {
+	.glass-panel {
+		@apply rounded-2xl border border-blue-400/30 bg-slate-900/60 backdrop-blur-xl shadow-2xl;
+	}
+
+	.neon-title {
+		@apply font-bold tracking-tight text-white;
+		text-shadow: 0 0 22px rgba(39, 213, 255, 0.38);
+	}
+
+	.neon-button {
+		@apply rounded-xl bg-gradient-to-r from-cyan-400 to-indigo-500 px-5 py-2.5 font-semibold text-slate-950 transition duration-300 hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(39,213,255,0.65)];
+	}
+
+	.futuristic-input {
+		@apply w-full rounded-xl border border-blue-300/30 bg-slate-900/70 px-4 py-3 text-white outline-none transition focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/50;
+	}
+}
