@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
+import RemoteImage from "../components/RemoteImage";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const status = useAppSelector((state) => state.auth.status);
   const error = useAppSelector((state) => state.auth.error);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [role, setRole] = useState<"patient" | "doctor">("patient");
   const [selectedOption, setSelectedOption] = useState("General Consultation");
   const [username, setUsername] = useState("");
@@ -28,10 +30,21 @@ const Login: React.FC = () => {
     ],
   };
 
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleLogin = async () => {
-    if (username && password) {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (trimmedUsername && trimmedPassword) {
       try {
-        await dispatch(loginUser({ username, password })).unwrap();
+        await dispatch(
+          loginUser({ username: trimmedUsername, password: trimmedPassword }),
+        ).unwrap();
         navigate("/dashboard");
       } catch {
         // Error is handled by Redux state.
@@ -106,9 +119,10 @@ const Login: React.FC = () => {
             </div>
           </div>
 
-          <img
+          <RemoteImage
             src="https://images.unsplash.com/photo-1584432810601-6c7f27d2362b?auto=format&fit=crop&w=1800&q=80"
             alt="Doctor using digital healthcare tools"
+            wrapperClassName="mt-6 h-56 w-full rounded-2xl border border-cyan-300/25"
             className="mt-6 h-56 w-full rounded-2xl border border-cyan-300/25 object-cover object-center"
           />
         </section>
@@ -204,7 +218,13 @@ const Login: React.FC = () => {
                 placeholder="********"
               />
             </div>
-            <button type="submit" className="neon-button w-full">
+            <button
+              type="submit"
+              className="neon-button w-full disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={
+                status === "loading" || !username.trim() || !password.trim()
+              }
+            >
               {status === "loading"
                 ? "Signing in..."
                 : `Continue as ${role === "doctor" ? "Doctor" : "Patient"}`}

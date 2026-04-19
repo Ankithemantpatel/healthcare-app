@@ -7,6 +7,7 @@ import {
 } from "shared";
 import { addToCart, decrementCartItem, fetchMedicines } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
+import RemoteImage from "../components/RemoteImage";
 
 const Medicines: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -190,13 +191,13 @@ const Medicines: React.FC = () => {
                 className="glass-panel overflow-hidden p-0"
                 aria-label={`${medicine.name}, ${medicine.category}, price $${medicine.price.toFixed(2)}`}
               >
-                <img
+                <RemoteImage
                   src={medicine.image}
                   alt={`${medicine.name} product pack`}
+                  wrapperClassName="h-40 w-full"
                   className="h-40 w-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder-avatar.png";
-                  }}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">

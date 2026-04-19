@@ -19,6 +19,16 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const authStatus = useAppSelector((state) => state.auth.status);
+
+  if (authStatus === "loading") {
+    return (
+      <div className="min-h-screen px-4 pb-10 pt-32 text-slate-200">
+        Restoring session...
+      </div>
+    );
+  }
+
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 

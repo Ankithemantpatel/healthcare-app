@@ -1,6 +1,7 @@
 import React from "react";
 import { fetchDoctors } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
+import RemoteImage from "../components/RemoteImage";
 
 const DoctorList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -29,13 +30,13 @@ const DoctorList: React.FC = () => {
               className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300"
             >
               <div className="flex gap-4">
-                <img
+                <RemoteImage
                   src={doctor.image}
                   alt={doctor.name}
+                  wrapperClassName="h-16 w-16 shrink-0 rounded-full"
                   className="h-16 w-16 rounded-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/placeholder-avatar.png";
-                  }}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold text-blue-600 mb-1">

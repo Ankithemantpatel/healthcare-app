@@ -63,61 +63,67 @@ const MedicineCard = React.memo(
     quantity: number;
     dispatch: ReturnType<typeof useAppDispatch>;
     styles: SharedStyles;
-  }) => (
-    <View style={styles.medicineCard}>
-      <MedicineImage uri={medicine.image} style={styles.medicineImage} />
-      <View style={styles.medicineBody}>
-        <View style={styles.rowBetween}>
-          <Text style={styles.medicineName}>{medicine.name}</Text>
-          <Text style={styles.medicinePrice}>${medicine.price.toFixed(2)}</Text>
-        </View>
-        <Text style={styles.medicineMeta}>
-          {medicine.brand} • {medicine.category}
-        </Text>
-        <View style={styles.rowBetween}>
-          <Text style={styles.medicineMeta}>{medicine.packSize}</Text>
-          <View
-            style={[
-              styles.badge,
-              medicine.requiresPrescription
-                ? styles.badgeWarning
-                : styles.badgeSuccess,
-            ]}
-          >
-            <Text style={styles.badgeText}>
-              {medicine.requiresPrescription ? "Rx Required" : "OTC"}
+  }) => {
+    console.log("MedicineCard actual render:", medicine.name, "qty:", quantity);
+
+    return (
+      <View style={styles.medicineCard}>
+        <MedicineImage uri={medicine.image} style={styles.medicineImage} />
+        <View style={styles.medicineBody}>
+          <View style={styles.rowBetween}>
+            <Text style={styles.medicineName}>{medicine.name}</Text>
+            <Text style={styles.medicinePrice}>
+              ${medicine.price.toFixed(2)}
             </Text>
           </View>
-        </View>
-
-        {quantity === 0 ? (
-          <PrimaryButton
-            label="Add to Cart"
-            onPress={() => dispatch(addToCart(medicine))}
-            styles={styles}
-          />
-        ) : (
-          <View style={styles.stepperWrap}>
-            <Pressable
-              onPress={() => dispatch(decrementCartItem(medicine.id))}
-              style={[styles.stepperButton, styles.stepperButtonDark]}
+          <Text style={styles.medicineMeta}>
+            {medicine.brand} • {medicine.category}
+          </Text>
+          <View style={styles.rowBetween}>
+            <Text style={styles.medicineMeta}>{medicine.packSize}</Text>
+            <View
+              style={[
+                styles.badge,
+                medicine.requiresPrescription
+                  ? styles.badgeWarning
+                  : styles.badgeSuccess,
+              ]}
             >
-              <Text style={styles.stepperSymbol}>-</Text>
-            </Pressable>
-            <View style={styles.stepperCountWrap}>
-              <Text style={styles.stepperCount}>{quantity}</Text>
+              <Text style={styles.badgeText}>
+                {medicine.requiresPrescription ? "Rx Required" : "OTC"}
+              </Text>
             </View>
-            <Pressable
-              onPress={() => dispatch(addToCart(medicine))}
-              style={[styles.stepperButton, styles.stepperButtonAccent]}
-            >
-              <Text style={styles.stepperSymbolDark}>+</Text>
-            </Pressable>
           </View>
-        )}
+
+          {quantity === 0 ? (
+            <PrimaryButton
+              label="Add to Cart"
+              onPress={() => dispatch(addToCart(medicine))}
+              styles={styles}
+            />
+          ) : (
+            <View style={styles.stepperWrap}>
+              <Pressable
+                onPress={() => dispatch(decrementCartItem(medicine.id))}
+                style={[styles.stepperButton, styles.stepperButtonDark]}
+              >
+                <Text style={styles.stepperSymbol}>-</Text>
+              </Pressable>
+              <View style={styles.stepperCountWrap}>
+                <Text style={styles.stepperCount}>{quantity}</Text>
+              </View>
+              <Pressable
+                onPress={() => dispatch(addToCart(medicine))}
+                style={[styles.stepperButton, styles.stepperButtonAccent]}
+              >
+                <Text style={styles.stepperSymbolDark}>+</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
-  ),
+    );
+  },
   (prevProps, nextProps) => {
     return (
       prevProps.medicine.id === nextProps.medicine.id &&
@@ -299,3 +305,35 @@ export const MedicinesScreenView = ({
     />
   );
 };
+
+/*
+  BAD EXAMPLE: Uncomment inside MedicinesScreenView to compare with the optimized version above.
+
+  Also temporarily replace the MedicineCard log above with:
+  console.log("BAD MedicineCard actual render:", medicine.name, "qty:", quantity);
+
+  return (
+    <FlatList
+      data={medicines}
+      renderItem={({ item }) => {
+        return (
+          <MedicineCard
+            medicine={item}
+            quantity={cartQuantityById[item.id] ?? 0}
+            dispatch={dispatch}
+            // BAD: Inline style object causes new prop every render
+            styles={{ ...styles, borderWidth: 1 }}
+          />
+        );
+      }}
+      keyExtractor={item => item.id}
+      ListHeaderComponent={ListHeaderComponent}
+      contentContainerStyle={styles.screenContent}
+      style={styles.screen}
+      removeClippedSubviews={true}
+      maxToRenderPerBatch={10}
+      updateCellsBatchingPeriod={50}
+      initialNumToRender={20}
+    />
+  );
+  */
