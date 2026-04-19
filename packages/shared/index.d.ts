@@ -105,11 +105,126 @@ export interface MedicineOrder {
 
 export type MedicineSortOption = "popular" | "priceAsc" | "priceDesc";
 
+export interface SharedUiCopy {
+  navigation: {
+    brand: string;
+    brandAriaLabel: string;
+    primaryAriaLabel: string;
+    routes: Record<string, string>;
+    logout: string;
+  };
+  session: {
+    restoring: string;
+  };
+  auth: {
+    heroEyebrow: string;
+    heroTitle: string;
+    heroDescription: string;
+    welcomeBack: string;
+    demoBanner: string;
+    tabs: Record<string, string>;
+    roles: Record<string, string>;
+    labels: Record<string, string>;
+    placeholders: Record<string, string>;
+    serviceOptions: Record<string, string[]>;
+    highlights: string[];
+    buttons: Record<string, string>;
+    hints: Record<string, string>;
+    demoAccounts: {
+      admin: { username: string; password: string };
+      patient: { username: string; password: string };
+    };
+  };
+  doctors: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    loading: string;
+    fields: Record<string, string>;
+    bookButton: string;
+  };
+  appointments: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    labels: Record<string, string>;
+    placeholders: Record<string, string>;
+    types: string[];
+    errors: Record<string, string>;
+    buttons: Record<string, string>;
+    modal: Record<string, string>;
+  };
+  checkout: {
+    title: string;
+    description: string;
+    backToMedicines: string;
+    cartItems: string;
+    clearCart: string;
+    emptyCart: string;
+    remove: string;
+    orderSummary: string;
+    subtotal: string;
+    delivery: string;
+    freeDelivery: string;
+    total: string;
+    placeOrderLoading: string;
+    loginToPlaceOrder: string;
+    placeOrder: string;
+  };
+  healthRecords: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    unauthenticatedMessage: string;
+    loading: string;
+    empty: string;
+    downloadAll: string;
+    downloadOne: string;
+    prescribedMedicines: string;
+    doctorNotes: string;
+    consultantLabel: string;
+    exportFailureTitle: string;
+    exportSingleFailurePrefix: string;
+    exportAllFailurePrefix: string;
+    shareMessage: string;
+    shareTitle: string;
+    document: Record<string, string>;
+  };
+  orders: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    loading: string;
+    empty: string;
+    unauthenticatedMessage: string;
+    orderPrefix: string;
+    placedLabel: string;
+    etaLabel: string;
+    itemsLabel: string;
+    summaryLabel: string;
+    totalLabel: string;
+  };
+  profile: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    unauthenticatedMessage: string;
+    labels: Record<string, string>;
+    placeholders: Record<string, string>;
+    buttons: Record<string, string>;
+    messages: Record<string, string>;
+  };
+  feedback: {
+    errors: Record<string, Record<string, string>>;
+  };
+}
+
 export declare const seedUsers: UserRecord[];
 export declare const seedDoctors: Doctor[];
 export declare const seedAppointments: Appointment[];
 export declare const seedPrescriptions: PrescriptionRecord[];
 export declare const seedOrders: MedicineOrder[];
+export declare const sharedUiCopy: SharedUiCopy;
 export declare const generateMedicinesCatalog: () => Medicine[];
 export declare const getMedicineCategories: (medicines: Medicine[]) => string[];
 export declare const filterMedicinesCatalog: (

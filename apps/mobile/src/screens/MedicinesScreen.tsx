@@ -305,35 +305,3 @@ export const MedicinesScreenView = ({
     />
   );
 };
-
-/*
-  BAD EXAMPLE: Uncomment inside MedicinesScreenView to compare with the optimized version above.
-
-  Also temporarily replace the MedicineCard log above with:
-  console.log("BAD MedicineCard actual render:", medicine.name, "qty:", quantity);
-
-  return (
-    <FlatList
-      data={medicines}
-      renderItem={({ item }) => {
-        return (
-          <MedicineCard
-            medicine={item}
-            quantity={cartQuantityById[item.id] ?? 0}
-            dispatch={dispatch}
-            // BAD: Inline style object causes new prop every render
-            styles={{ ...styles, borderWidth: 1 }}
-          />
-        );
-      }}
-      keyExtractor={item => item.id}
-      ListHeaderComponent={ListHeaderComponent}
-      contentContainerStyle={styles.screenContent}
-      style={styles.screen}
-      removeClippedSubviews={true}
-      maxToRenderPerBatch={10}
-      updateCellsBatchingPeriod={50}
-      initialNumToRender={20}
-    />
-  );
-  */

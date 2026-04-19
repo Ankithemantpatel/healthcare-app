@@ -1,4 +1,6 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy: CONSTANTS } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const {
   createAsyncState,
   createMutationState,
@@ -6,17 +8,17 @@ const {
 } = require("../core/stateHelpers");
 
 const fetchOrders = createAsyncThunk(
-  "orders/fetchOrders",
+  REDUX_ACTION_TYPES.orders.fetchOrders,
   async (userId, { extra }) => extra.api.getOrders(userId),
 );
 
 const placeOrder = createAsyncThunk(
-  "orders/placeOrder",
+  REDUX_ACTION_TYPES.orders.placeOrder,
   async (payload, { extra }) => extra.api.placeOrder(payload),
 );
 
 const ordersSlice = createSlice({
-  name: "orders",
+  name: REDUX_SLICES.orders,
   initialState: {
     items: [],
     ...createAsyncState(),
@@ -35,7 +37,10 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = "failed";
-        state.error = getActionErrorMessage(action, "Failed to fetch orders");
+        state.error = getActionErrorMessage(
+          action,
+          CONSTANTS.feedback.errors.orders.fetch,
+        );
       })
       .addCase(placeOrder.pending, (state) => {
         state.placeStatus = "loading";
@@ -47,7 +52,10 @@ const ordersSlice = createSlice({
       })
       .addCase(placeOrder.rejected, (state, action) => {
         state.placeStatus = "failed";
-        state.error = getActionErrorMessage(action, "Failed to place order");
+        state.error = getActionErrorMessage(
+          action,
+          CONSTANTS.feedback.errors.orders.place,
+        );
       });
   },
 });

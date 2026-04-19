@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { sharedUiCopy } from "shared";
 import {
   createAppointment,
   fetchAppointments,
@@ -10,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const AppointmentBooking: React.FC = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const user = useAppSelector((state) => state.auth.user);
   const doctors = useAppSelector((state) => state.doctors.items);
   const appointments = useAppSelector((state) => state.appointments.items);
@@ -19,7 +22,7 @@ const AppointmentBooking: React.FC = () => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [doctor, setDoctor] = useState("");
-  const [type, setType] = useState("Consultation");
+  const [type, setType] = useState(sharedUiCopy.appointments.types[0]);
   const [reason, setReason] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -29,6 +32,10 @@ const AppointmentBooking: React.FC = () => {
   const [authEmail, setAuthEmail] = useState("");
   const [authPhone, setAuthPhone] = useState("");
   const [modalError, setModalError] = useState<string | null>(null);
+  const locationDoctor =
+    typeof location.state === "object" && location.state !== null
+      ? ((location.state as { selectedDoctor?: string }).selectedDoctor ?? "")
+      : "";
 
   React.useEffect(() => {
     dispatch(fetchDoctors());
@@ -36,6 +43,14 @@ const AppointmentBooking: React.FC = () => {
       dispatch(fetchAppointments(user.id));
     }
   }, [dispatch, user?.id]);
+
+  React.useEffect(() => {
+    if (!locationDoctor) {
+      return;
+    }
+
+    setDoctor(locationDoctor);
+  }, [locationDoctor]);
 
   const bookForUser = async (userId: string) => {
     await dispatch(
@@ -52,11 +67,12 @@ const AppointmentBooking: React.FC = () => {
     setTime("");
     setDoctor("");
     setReason("");
+    setModalError(null);
   };
 
-  const handleProceedToPayment = async () => {
+  const handleConfirmAppointment = async () => {
     if (!(date && time && doctor && reason)) {
-      setModalError("Please complete all appointment details before payment.");
+      setModalError(sharedUiCopy.appointments.errors.incompleteDetails);
       return;
     }
 
@@ -99,153 +115,173 @@ const AppointmentBooking: React.FC = () => {
       setAuthPhone("");
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Authentication failed";
+        error instanceof Error
+          ? error.message
+          : sharedUiCopy.appointments.errors.authenticationFailed;
       setModalError(message);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 pb-10 pt-32">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-2">
-          Book an Appointment
-        </h1>
-        <p className="mb-6 text-sm text-gray-500">
-          You can continue as guest. Login or create account is required only at
-          payment confirmation.
-        </p>
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Select Doctor
-            </label>
-            <select
-              value={doctor}
-              onChange={(e) => setDoctor(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">-- Select a Doctor --</option>
-              {doctors.map((d) => (
-                <option key={d.id} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Appointment Type
-            </label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="Consultation">Consultation</option>
-              <option value="Follow-up">Follow-up</option>
-              <option value="Routine Check">Routine Check</option>
-            </select>
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Select Date
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Select Time
-            </label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-semibold mb-2">
-              Reason for Visit
-            </label>
-            <textarea
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Describe symptoms or consultation purpose"
-            />
-          </div>
-          <button
-            onClick={handleProceedToPayment}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-700 hover:to-blue-900 transition duration-300"
-          >
-            {createStatus === "loading"
-              ? "Processing..."
-              : "Proceed to Payment"}
-          </button>
-          {modalError && (
-            <p className="mt-3 text-sm text-rose-600">{modalError}</p>
-          )}
-        </div>
+    <main id="main-content" className="relative px-4 pb-10 pt-32">
+      <div className="mx-auto max-w-5xl">
+        <header className="mb-6 rounded-2xl border border-cyan-300/25 bg-gradient-to-r from-slate-950/80 via-slate-900/80 to-cyan-950/70 p-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-cyan-200">
+            {sharedUiCopy.appointments.eyebrow}
+          </p>
+          <h1 className="mt-1 text-4xl font-bold text-white">
+            {sharedUiCopy.appointments.title}
+          </h1>
+          <p className="mt-2 text-sm text-slate-300">
+            {sharedUiCopy.appointments.description}
+          </p>
+        </header>
 
-        <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-blue-700 mb-4">
-            My Appointments
-          </h2>
-          {appointments.length === 0 ? (
-            <p className="text-gray-600">No appointments yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {appointments.map((item) => (
-                <li
-                  key={item.id}
-                  className="rounded-lg border border-gray-200 p-3 text-gray-700"
-                >
-                  <p className="font-semibold">{item.doctor}</p>
-                  <p className="text-sm">
-                    {item.type} on {item.date} at {item.time}
-                  </p>
-                  <p className="text-sm text-gray-500">Reason: {item.reason}</p>
-                  <span
-                    className={`mt-2 inline-block rounded-full px-2 py-1 text-xs font-medium ${item.status === "Confirmed" ? "bg-green-100 text-green-700" : item.status === "Pending" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-700"}`}
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <section className="glass-panel p-8">
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-cyan-100">
+                {sharedUiCopy.appointments.labels.selectDoctor}
+              </label>
+              <select
+                value={doctor}
+                onChange={(e) => setDoctor(e.target.value)}
+                className="w-full rounded-lg border border-cyan-300/25 bg-white px-4 py-2 text-slate-900 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+              >
+                <option value="">
+                  {sharedUiCopy.appointments.placeholders.doctorSelect}
+                </option>
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-cyan-100">
+                {sharedUiCopy.appointments.labels.appointmentType}
+              </label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full rounded-lg border border-cyan-300/25 bg-white px-4 py-2 text-slate-900 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+              >
+                {sharedUiCopy.appointments.types.map((appointmentType) => (
+                  <option key={appointmentType} value={appointmentType}>
+                    {appointmentType}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-cyan-100">
+                {sharedUiCopy.appointments.labels.selectDate}
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full rounded-lg border border-cyan-300/25 bg-white px-4 py-2 text-slate-900 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-cyan-100">
+                {sharedUiCopy.appointments.labels.selectTime}
+              </label>
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-full rounded-lg border border-cyan-300/25 bg-white px-4 py-2 text-slate-900 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-sm font-semibold text-cyan-100">
+                {sharedUiCopy.appointments.labels.reason}
+              </label>
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows={3}
+                className="w-full rounded-lg border border-cyan-300/25 bg-white px-4 py-2 text-slate-900 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+                placeholder={sharedUiCopy.appointments.placeholders.reason}
+              />
+            </div>
+            <button
+              onClick={handleConfirmAppointment}
+              className="w-full rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 font-semibold text-slate-950 transition hover:from-cyan-300 hover:to-blue-400"
+            >
+              {createStatus === "loading"
+                ? sharedUiCopy.appointments.buttons.processing
+                : sharedUiCopy.appointments.buttons.proceedToPayment}
+            </button>
+            {modalError && (
+              <p className="mt-3 text-sm text-rose-300">{modalError}</p>
+            )}
+          </section>
+
+          <section className="glass-panel p-6">
+            <h2 className="mb-4 text-xl font-semibold text-cyan-200">
+              {sharedUiCopy.appointments.labels.myAppointments}
+            </h2>
+            {appointments.length === 0 ? (
+              <p className="text-slate-300">
+                {sharedUiCopy.appointments.modal.emptyAppointments}
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {appointments.map((item) => (
+                  <li
+                    key={item.id}
+                    className="rounded-lg border border-cyan-300/15 bg-slate-950/45 p-3 text-slate-200"
                   >
-                    {item.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+                    <p className="font-semibold text-cyan-100">{item.doctor}</p>
+                    <p className="text-sm">
+                      {item.type} on {item.date} at {item.time}
+                    </p>
+                    <p className="text-sm text-slate-400">
+                      {sharedUiCopy.appointments.labels.reasonPrefix}:{" "}
+                      {item.reason}
+                    </p>
+                    <span
+                      className={`mt-2 inline-block rounded-full px-2 py-1 text-xs font-medium ${item.status === "Confirmed" ? "bg-emerald-300/20 text-emerald-200" : item.status === "Pending" ? "bg-amber-300/20 text-amber-200" : "bg-slate-700/40 text-slate-200"}`}
+                    >
+                      {item.status}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
 
         {showAuthModal && (
           <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 px-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-              <h3 className="text-2xl font-bold text-gray-800">
-                {authMode === "login" ? "Login to Continue" : "Create Account"}
+            <div className="w-full max-w-md rounded-2xl border border-cyan-300/20 bg-slate-950 p-6 shadow-2xl">
+              <h3 className="text-2xl font-bold text-white">
+                {authMode === "login"
+                  ? sharedUiCopy.appointments.buttons.loginToContinue
+                  : sharedUiCopy.appointments.buttons.createAccount}
               </h3>
-              <p className="mt-1 text-sm text-gray-500">
-                Complete authentication to confirm payment and finalize booking.
+              <p className="mt-1 text-sm text-slate-400">
+                {sharedUiCopy.appointments.modal.description}
               </p>
 
               <div className="mt-4 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setAuthMode("login")}
-                  className={`rounded-lg px-3 py-2 text-sm ${authMode === "login" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
+                  className={`rounded-lg px-3 py-2 text-sm ${authMode === "login" ? "bg-cyan-300/20 text-cyan-100" : "bg-slate-800 text-slate-300"}`}
                 >
-                  Login
+                  {sharedUiCopy.auth.tabs.login}
                 </button>
                 <button
                   type="button"
                   onClick={() => setAuthMode("register")}
-                  className={`rounded-lg px-3 py-2 text-sm ${authMode === "register" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}
+                  className={`rounded-lg px-3 py-2 text-sm ${authMode === "register" ? "bg-cyan-300/20 text-cyan-100" : "bg-slate-800 text-slate-300"}`}
                 >
-                  Create Account
+                  {sharedUiCopy.auth.tabs.register}
                 </button>
               </div>
 
@@ -255,63 +291,73 @@ const AppointmentBooking: React.FC = () => {
                     <input
                       value={authName}
                       onChange={(e) => setAuthName(e.target.value)}
-                      placeholder="Full name"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      placeholder={
+                        sharedUiCopy.appointments.placeholders.authName
+                      }
+                      className="w-full rounded-lg border border-cyan-300/25 bg-white px-3 py-2 text-slate-900"
                     />
                     <input
                       value={authEmail}
                       onChange={(e) => setAuthEmail(e.target.value)}
-                      placeholder="Email"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      placeholder={
+                        sharedUiCopy.appointments.placeholders.authEmail
+                      }
+                      className="w-full rounded-lg border border-cyan-300/25 bg-white px-3 py-2 text-slate-900"
                     />
                     <input
                       value={authPhone}
                       onChange={(e) => setAuthPhone(e.target.value)}
-                      placeholder="Phone"
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                      placeholder={
+                        sharedUiCopy.appointments.placeholders.authPhone
+                      }
+                      className="w-full rounded-lg border border-cyan-300/25 bg-white px-3 py-2 text-slate-900"
                     />
                   </>
                 )}
                 <input
                   value={authUsername}
                   onChange={(e) => setAuthUsername(e.target.value)}
-                  placeholder="Username"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                  placeholder={
+                    sharedUiCopy.appointments.placeholders.authUsername
+                  }
+                  className="w-full rounded-lg border border-cyan-300/25 bg-white px-3 py-2 text-slate-900"
                 />
                 <input
                   type="password"
                   value={authPassword}
                   onChange={(e) => setAuthPassword(e.target.value)}
-                  placeholder="Password"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                  placeholder={
+                    sharedUiCopy.appointments.placeholders.authPassword
+                  }
+                  className="w-full rounded-lg border border-cyan-300/25 bg-white px-3 py-2 text-slate-900"
                 />
               </div>
 
               {modalError && (
-                <p className="mt-3 text-sm text-rose-600">{modalError}</p>
+                <p className="mt-3 text-sm text-rose-300">{modalError}</p>
               )}
 
               <div className="mt-5 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setShowAuthModal(false)}
-                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700"
+                  className="flex-1 rounded-lg border border-slate-700 px-4 py-2 text-slate-200"
                 >
-                  Cancel
+                  {sharedUiCopy.appointments.buttons.cancel}
                 </button>
                 <button
                   type="button"
                   onClick={handleModalAuth}
-                  className="flex-1 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white"
+                  className="flex-1 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 font-semibold text-slate-950"
                 >
-                  Confirm & Pay
+                  {sharedUiCopy.appointments.buttons.confirmAndPay}
                 </button>
               </div>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 };
 

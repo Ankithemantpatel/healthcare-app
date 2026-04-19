@@ -1,4 +1,6 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const {
   createAsyncState,
   createMutationState,
@@ -6,17 +8,17 @@ const {
 } = require("../core/stateHelpers");
 
 const fetchAppointments = createAsyncThunk(
-  "appointments/fetchAppointments",
+  REDUX_ACTION_TYPES.appointments.fetchAppointments,
   async (userId, { extra }) => extra.api.getAppointments(userId),
 );
 
 const createAppointment = createAsyncThunk(
-  "appointments/createAppointment",
+  REDUX_ACTION_TYPES.appointments.createAppointment,
   async (payload, { extra }) => extra.api.createAppointment(payload),
 );
 
 const appointmentsSlice = createSlice({
-  name: "appointments",
+  name: REDUX_SLICES.appointments,
   initialState: {
     items: [],
     ...createAsyncState(),
@@ -38,7 +40,7 @@ const appointmentsSlice = createSlice({
         state.status = "failed";
         state.error = getActionErrorMessage(
           action,
-          "Failed to fetch appointments",
+          sharedUiCopy.feedback.errors.appointments.fetch,
         );
       })
       .addCase(createAppointment.pending, (state) => {
@@ -53,7 +55,7 @@ const appointmentsSlice = createSlice({
         state.createStatus = "failed";
         state.error = getActionErrorMessage(
           action,
-          "Failed to create appointment",
+          sharedUiCopy.feedback.errors.appointments.create,
         );
       });
   },

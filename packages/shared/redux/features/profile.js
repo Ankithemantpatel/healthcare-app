@@ -1,4 +1,6 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const {
   createAsyncState,
   createMutationState,
@@ -6,18 +8,18 @@ const {
 } = require("../core/stateHelpers");
 
 const fetchProfile = createAsyncThunk(
-  "profile/fetchProfile",
+  REDUX_ACTION_TYPES.profile.fetchProfile,
   async (userId, { extra }) => extra.api.getProfile(userId),
 );
 
 const saveProfile = createAsyncThunk(
-  "profile/saveProfile",
+  REDUX_ACTION_TYPES.profile.saveProfile,
   async ({ userId, updates }, { extra }) =>
     extra.api.updateProfile(userId, updates),
 );
 
 const profileSlice = createSlice({
-  name: "profile",
+  name: REDUX_SLICES.profile,
   initialState: {
     data: null,
     ...createAsyncState(),
@@ -36,7 +38,10 @@ const profileSlice = createSlice({
       })
       .addCase(fetchProfile.rejected, (state, action) => {
         state.status = "failed";
-        state.error = getActionErrorMessage(action, "Failed to fetch profile");
+        state.error = getActionErrorMessage(
+          action,
+          sharedUiCopy.feedback.errors.profile.fetch,
+        );
       })
       .addCase(saveProfile.pending, (state) => {
         state.saveStatus = "loading";
@@ -48,7 +53,10 @@ const profileSlice = createSlice({
       })
       .addCase(saveProfile.rejected, (state, action) => {
         state.saveStatus = "failed";
-        state.error = getActionErrorMessage(action, "Failed to save profile");
+        state.error = getActionErrorMessage(
+          action,
+          sharedUiCopy.feedback.errors.profile.save,
+        );
       });
   },
 });

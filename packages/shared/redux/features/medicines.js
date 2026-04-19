@@ -1,16 +1,18 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const {
   createAsyncState,
   getActionErrorMessage,
 } = require("../core/stateHelpers");
 
 const fetchMedicines = createAsyncThunk(
-  "medicines/fetchMedicines",
+  REDUX_ACTION_TYPES.medicines.fetchMedicines,
   async (_, { extra }) => extra.api.getMedicines(),
 );
 
 const medicinesSlice = createSlice({
-  name: "medicines",
+  name: REDUX_SLICES.medicines,
   initialState: {
     catalog: [],
     cart: [],
@@ -68,7 +70,10 @@ const medicinesSlice = createSlice({
       })
       .addCase(fetchMedicines.rejected, (state, action) => {
         state.status = "failed";
-        state.error = getActionErrorMessage(action, "Failed to load medicines");
+        state.error = getActionErrorMessage(
+          action,
+          sharedUiCopy.feedback.errors.medicines.fetch,
+        );
       });
   },
 });

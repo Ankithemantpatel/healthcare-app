@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { sharedUiCopy } from "shared";
 import { logoutUser } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
@@ -9,12 +10,20 @@ const Navbar: React.FC = () => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   const links = [
-    { to: "/login", label: "Home" },
-    { to: "/dashboard", label: "Dashboard" },
-    { to: "/doctors", label: "Doctors" },
-    { to: "/appointments", label: "Appointments" },
-    { to: "/medicines", label: "Medicines" },
-    { to: "/profile", label: "Profile" },
+    { to: "/login", label: sharedUiCopy.navigation.routes.login },
+    { to: "/dashboard", label: sharedUiCopy.navigation.routes.dashboard },
+    { to: "/doctors", label: sharedUiCopy.navigation.routes.doctors },
+    {
+      to: "/appointments",
+      label: sharedUiCopy.navigation.routes.appointments,
+    },
+    { to: "/medicines", label: sharedUiCopy.navigation.routes.medicines },
+    {
+      to: "/health-records",
+      label: sharedUiCopy.navigation.routes.healthRecords,
+    },
+    { to: "/orders", label: sharedUiCopy.navigation.routes.orders },
+    { to: "/profile", label: sharedUiCopy.navigation.routes.profile },
   ];
 
   const handleLogout = async () => {
@@ -24,23 +33,28 @@ const Navbar: React.FC = () => {
 
   return (
     <nav
-      aria-label="Primary"
+      aria-label={sharedUiCopy.navigation.primaryAriaLabel}
       className="fixed left-1/2 top-4 z-50 w-[95%] max-w-6xl -translate-x-1/2 rounded-2xl border border-cyan-300/20 bg-slate-950/80 px-4 py-3 shadow-2xl backdrop-blur-xl"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div
-          aria-label="CareBridge 24x7 home"
+          aria-label={sharedUiCopy.navigation.brandAriaLabel}
           className="flex items-center gap-2 rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-3 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-cyan-200"
         >
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-cyan-300" />
-          CareBridge 24x7
+          {sharedUiCopy.navigation.brand}
         </div>
         <ul className="flex flex-wrap items-center gap-2">
           {links
             .filter((link) =>
               isAuthenticated
                 ? true
-                : link.to !== "/profile" && link.to !== "/dashboard",
+                : ![
+                    "/profile",
+                    "/dashboard",
+                    "/health-records",
+                    "/orders",
+                  ].includes(link.to),
             )
             .map((link) => (
               <li key={link.to}>
@@ -65,7 +79,7 @@ const Navbar: React.FC = () => {
                 onClick={handleLogout}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-rose-200 transition hover:bg-rose-400/20 hover:text-white"
               >
-                Logout
+                {sharedUiCopy.navigation.logout}
               </button>
             </li>
           )}

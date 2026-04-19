@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { sharedUiCopy } from "shared";
 import { loginUser } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import RemoteImage from "../components/RemoteImage";
@@ -11,24 +12,34 @@ const Login: React.FC = () => {
   const error = useAppSelector((state) => state.auth.error);
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const [role, setRole] = useState<"patient" | "doctor">("patient");
-  const [selectedOption, setSelectedOption] = useState("General Consultation");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [selectedOption, setSelectedOption] = useState(
+    sharedUiCopy.auth.serviceOptions.patient[0],
+  );
+  const [username, setUsername] = useState(
+    sharedUiCopy.auth.demoAccounts.patient.username,
+  );
+  const [password, setPassword] = useState(
+    sharedUiCopy.auth.demoAccounts.patient.password,
+  );
 
-  const roleOptions: Record<"patient" | "doctor", string[]> = {
-    patient: [
-      "General Consultation",
-      "Follow-up",
-      "Second Opinion",
-      "Wellness",
-    ],
-    doctor: [
-      "Doctor Login",
-      "Teleconsult Panel",
-      "Hospital Dashboard",
-      "ePrescription",
-    ],
-  };
+  const roleOptions = sharedUiCopy.auth.serviceOptions;
+
+  const applyDemoCredentials = React.useCallback(
+    (nextRole: "patient" | "doctor") => {
+      setRole(nextRole);
+      setSelectedOption(roleOptions[nextRole][0]);
+
+      if (nextRole === "patient") {
+        setUsername(sharedUiCopy.auth.demoAccounts.patient.username);
+        setPassword(sharedUiCopy.auth.demoAccounts.patient.password);
+        return;
+      }
+
+      setUsername(sharedUiCopy.auth.demoAccounts.admin.username);
+      setPassword(sharedUiCopy.auth.demoAccounts.admin.password);
+    },
+    [roleOptions],
+  );
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -61,17 +72,13 @@ const Login: React.FC = () => {
         <section className="glass-panel overflow-hidden border-indigo-300/35 p-7">
           <div className="rounded-xl bg-gradient-to-r from-teal-500/15 via-cyan-500/10 to-indigo-500/15 p-4">
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200">
-              CareBridge Health Portal
+              {sharedUiCopy.navigation.brand}
             </p>
             <h1 className="mt-3 text-5xl font-extrabold leading-tight text-white">
-              Book doctors, labs,
-              <br />
-              medicines and care plans.
+              {sharedUiCopy.auth.heroTitle}
             </h1>
             <p className="mt-4 max-w-xl text-slate-200/90">
-              A complete healthcare website experience for patients and doctors,
-              with online consultations, digital prescriptions and appointment
-              tracking.
+              {sharedUiCopy.auth.heroDescription}
             </p>
           </div>
 
@@ -101,14 +108,7 @@ const Login: React.FC = () => {
               Popular services
             </p>
             <div className="flex flex-wrap gap-2">
-              {[
-                "General Physician",
-                "Dermatology",
-                "Cardiology",
-                "Lab Tests",
-                "Medicine Delivery",
-                "Health Records",
-              ].map((item) => (
+              {sharedUiCopy.auth.highlights.map((item) => (
                 <span
                   key={item}
                   className="rounded-full border border-cyan-300/20 px-3 py-1 text-xs text-slate-200"
@@ -129,46 +129,40 @@ const Login: React.FC = () => {
 
         <section className="glass-panel p-8">
           <p className="mb-3 text-sm text-slate-300">
-            Welcome back to CareBridge
+            {sharedUiCopy.auth.welcomeBack}
           </p>
           <p className="mb-4 rounded-lg border border-cyan-300/30 bg-cyan-300/10 px-3 py-2 text-xs text-cyan-100">
-            Demo: admin / admin123 or patient1 / patient123
+            {sharedUiCopy.auth.demoBanner}
           </p>
 
           <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-slate-900/60 p-1.5">
             <button
               type="button"
-              onClick={() => {
-                setRole("patient");
-                setSelectedOption(roleOptions.patient[0]);
-              }}
+              onClick={() => applyDemoCredentials("patient")}
               className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                 role === "patient"
                   ? "bg-cyan-400 text-slate-950"
                   : "text-slate-200 hover:bg-white/10"
               }`}
             >
-              Patient
+              {sharedUiCopy.auth.roles.patient}
             </button>
             <button
               type="button"
-              onClick={() => {
-                setRole("doctor");
-                setSelectedOption(roleOptions.doctor[0]);
-              }}
+              onClick={() => applyDemoCredentials("doctor")}
               className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
                 role === "doctor"
                   ? "bg-cyan-400 text-slate-950"
                   : "text-slate-200 hover:bg-white/10"
               }`}
             >
-              Doctor
+              {sharedUiCopy.auth.roles.doctor}
             </button>
           </div>
 
           <div className="mb-5">
             <label className="mb-2 block text-sm font-medium text-cyan-100">
-              Select service
+              {sharedUiCopy.auth.labels.service}
             </label>
             <select
               value={selectedOption}
@@ -196,26 +190,26 @@ const Login: React.FC = () => {
           >
             <div>
               <label className="mb-2 block text-sm font-medium text-cyan-100">
-                Username
+                {sharedUiCopy.auth.labels.username}
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="futuristic-input"
-                placeholder="operator.id"
+                placeholder={sharedUiCopy.auth.placeholders.username}
               />
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-cyan-100">
-                Password
+                {sharedUiCopy.auth.labels.password}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="futuristic-input"
-                placeholder="********"
+                placeholder={sharedUiCopy.auth.placeholders.password}
               />
             </div>
             <button
@@ -226,15 +220,33 @@ const Login: React.FC = () => {
               }
             >
               {status === "loading"
-                ? "Signing in..."
-                : `Continue as ${role === "doctor" ? "Doctor" : "Patient"}`}
+                ? sharedUiCopy.auth.buttons.signingIn
+                : role === "doctor"
+                  ? sharedUiCopy.auth.buttons.continueAsDoctor
+                  : sharedUiCopy.auth.buttons.continueAsPatient}
             </button>
             {error && <p className="text-sm text-rose-300">{error}</p>}
           </form>
 
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => applyDemoCredentials("patient")}
+              className="rounded-lg border border-cyan-300/25 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300/50"
+            >
+              {sharedUiCopy.auth.buttons.usePatientDemo}
+            </button>
+            <button
+              type="button"
+              onClick={() => applyDemoCredentials("doctor")}
+              className="rounded-lg border border-cyan-300/25 bg-slate-900/60 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:border-cyan-300/50"
+            >
+              {sharedUiCopy.auth.buttons.useDoctorAdminDemo}
+            </button>
+          </div>
+
           <p className="mt-4 text-xs text-slate-400">
-            New user? You can create an account during appointment payment
-            confirmation.
+            {sharedUiCopy.auth.hints.registerAtCheckout}
           </p>
         </section>
       </div>

@@ -1,3 +1,5 @@
+const { sharedUiCopy: CONSTANTS } = require("./uiText");
+
 const seedUsers = [
   {
     id: "u1",
@@ -454,4 +456,5 @@ module.exports = {
   generateMedicinesCatalog,
   getMedicineCategories,
   filterMedicinesCatalog,
+  sharedUiCopy: CONSTANTS,
 };

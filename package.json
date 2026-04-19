@@ -8,7 +8,9 @@
   ],
   "devDependencies": {
     "autoprefixer": "^10.4.27",
+    "concurrently": "^9.1.2",
     "eslint": "^8.0.0",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.9",
     "prettier": "^3.0.0",
     "tailwindcss": "^4.2.2",
@@ -16,7 +18,11 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "turbo run build"
+    "build": "turbo run build",
+    "start:api": "npm --prefix packages/api start",
+    "start:web": "npm --prefix apps/web start",
+    "dev": "concurrently \"npm run start:api\" \"npm run start:web\"",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "react": "^18.2.0",

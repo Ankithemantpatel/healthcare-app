@@ -6,6 +6,7 @@
     "name": "Ava Morgan",
     "email": "ava.morgan@medsync.ai",
     "phone": "+1-555-0101",
+    "address": "245 Harbor View Drive, San Francisco, CA 94107",
     "condition": "Hypertension"
   },
   {
@@ -15,6 +16,7 @@
     "name": "Liam Chen",
     "email": "liam.chen@medsync.ai",
     "phone": "+1-555-0102",
+    "address": "8934 Cedar Lane, Seattle, WA 98109",
     "condition": "Asthma"
   }
 ]

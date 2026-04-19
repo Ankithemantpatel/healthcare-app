@@ -1,10 +1,13 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { sharedUiCopy } from "shared";
 import { fetchDoctors } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import RemoteImage from "../components/RemoteImage";
 
 const DoctorList: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const doctors = useAppSelector((state) => state.doctors.items);
   const status = useAppSelector((state) => state.doctors.status);
 
@@ -15,19 +18,27 @@ const DoctorList: React.FC = () => {
   }, [dispatch, status]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 pb-10 pt-32">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">
-          Available Doctors
-        </h1>
+    <main id="main-content" className="relative px-4 pb-10 pt-32">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-6 rounded-2xl border border-cyan-300/25 bg-gradient-to-r from-slate-950/80 via-slate-900/80 to-cyan-950/70 p-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-cyan-200">
+            {sharedUiCopy.doctors.eyebrow}
+          </p>
+          <h1 className="mt-1 text-4xl font-bold text-white">
+            {sharedUiCopy.doctors.title}
+          </h1>
+          <p className="mt-2 text-sm text-slate-300">
+            {sharedUiCopy.doctors.description}
+          </p>
+        </header>
         {status === "loading" && (
-          <p className="mb-4 text-slate-300">Loading specialists...</p>
+          <p className="mb-4 text-slate-300">{sharedUiCopy.doctors.loading}</p>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {doctors.map((doctor) => (
-            <div
+            <article
               key={doctor.id}
-              className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition duration-300"
+              className="glass-panel p-6 transition duration-300 hover:border-cyan-300/40"
             >
               <div className="flex gap-4">
                 <RemoteImage
@@ -39,42 +50,61 @@ const DoctorList: React.FC = () => {
                   decoding="async"
                 />
                 <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-blue-600 mb-1">
+                  <h2 className="mb-1 text-xl font-semibold text-cyan-200">
                     {doctor.name}
                   </h2>
-                  <p className="text-sm text-gray-500">{doctor.hospital}</p>
+                  <p className="text-sm text-slate-400">{doctor.hospital}</p>
                 </div>
               </div>
-              <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-gray-600">
+              <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-300">
                 <p>
-                  <span className="font-semibold">Specialty:</span>{" "}
+                  <span className="font-semibold">
+                    {sharedUiCopy.doctors.fields.specialty}:
+                  </span>{" "}
                   {doctor.specialty}
                 </p>
                 <p>
-                  <span className="font-semibold">Experience:</span>{" "}
-                  {doctor.experienceYears} yrs
+                  <span className="font-semibold">
+                    {sharedUiCopy.doctors.fields.experience}:
+                  </span>{" "}
+                  {doctor.experienceYears}{" "}
+                  {sharedUiCopy.doctors.fields.yearsSuffix}
                 </p>
                 <p>
-                  <span className="font-semibold">Rating:</span> {doctor.rating}{" "}
-                  / 5
+                  <span className="font-semibold">
+                    {sharedUiCopy.doctors.fields.rating}:
+                  </span>{" "}
+                  {doctor.rating} {sharedUiCopy.doctors.fields.ratingSuffix}
                 </p>
                 <p>
-                  <span className="font-semibold">Fee:</span> $
-                  {doctor.consultationFee}
+                  <span className="font-semibold">
+                    {sharedUiCopy.doctors.fields.fee}:
+                  </span>{" "}
+                  ${doctor.consultationFee}
                 </p>
               </div>
-              <p className="text-gray-600 mt-3 mb-4 text-sm">
-                <span className="font-semibold">Availability:</span>{" "}
+              <p className="mb-4 mt-3 text-sm text-slate-300">
+                <span className="font-semibold">
+                  {sharedUiCopy.doctors.fields.availability}:
+                </span>{" "}
                 {doctor.availability}
               </p>
-              <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">
-                Book Appointment
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/appointments", {
+                    state: { selectedDoctor: doctor.name },
+                  })
+                }
+                className="w-full rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 font-semibold text-slate-950 transition hover:from-cyan-300 hover:to-blue-400"
+              >
+                {sharedUiCopy.doctors.bookButton}
               </button>
-            </div>
+            </article>
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -1,16 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { sharedUiCopy } from "shared";
 import {
   addToCart,
   clearCart,
   decrementCartItem,
+  placeOrder,
   removeFromCart,
 } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const MedicinesCheckout: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const cart = useAppSelector((state) => state.medicines.cart);
+  const user = useAppSelector((state) => state.auth.user);
+  const placeStatus = useAppSelector((state) => state.orders.placeStatus);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce(
@@ -20,22 +25,41 @@ const MedicinesCheckout: React.FC = () => {
   const deliveryCharge = subtotal > 49 ? 0 : subtotal > 0 ? 4.99 : 0;
   const total = subtotal + deliveryCharge;
 
+  const handlePlaceOrder = async () => {
+    if (!user?.id) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    if (cart.length === 0) {
+      return;
+    }
+
+    await dispatch(
+      placeOrder({ userId: user.id, items: cart, totalAmount: total }),
+    ).unwrap();
+    dispatch(clearCart());
+    navigate("/orders");
+  };
+
   return (
     <main id="main-content" className="relative px-4 pb-10 pt-32">
       <div className="mx-auto max-w-6xl">
         <header className="mb-6 flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-white">Medicine Checkout</h1>
+            <h1 className="text-4xl font-bold text-white">
+              {sharedUiCopy.checkout.title}
+            </h1>
             <p className="mt-1 text-sm text-slate-300">
-              Review your medicine cart and proceed with order placement.
+              {sharedUiCopy.checkout.description}
             </p>
           </div>
           <Link
             to="/medicines"
             className="rounded-lg border border-cyan-300/30 px-4 py-2 text-sm text-cyan-200"
-            aria-label="Back to medicines catalog"
+            aria-label={sharedUiCopy.checkout.backToMedicines}
           >
-            Back to Medicines
+            {sharedUiCopy.checkout.backToMedicines}
           </Link>
         </header>
 
@@ -49,23 +73,23 @@ const MedicinesCheckout: React.FC = () => {
                 id="cart-items-heading"
                 className="text-xl font-semibold text-white"
               >
-                Cart Items ({totalItems})
+                {sharedUiCopy.checkout.cartItems} ({totalItems})
               </h2>
               {cart.length > 0 && (
                 <button
                   type="button"
                   onClick={() => dispatch(clearCart())}
                   className="text-xs text-rose-300 hover:text-rose-200"
-                  aria-label="Clear all items from cart"
+                  aria-label={sharedUiCopy.checkout.clearCart}
                 >
-                  Clear Cart
+                  {sharedUiCopy.checkout.clearCart}
                 </button>
               )}
             </div>
 
             {cart.length === 0 ? (
               <p className="text-slate-300">
-                Your cart is empty. Add medicines to continue.
+                {sharedUiCopy.checkout.emptyCart}
               </p>
             ) : (
               <ul className="space-y-3">
@@ -94,7 +118,7 @@ const MedicinesCheckout: React.FC = () => {
                         className="text-xs text-rose-300"
                         aria-label={`Remove ${item.medicine.name} from cart`}
                       >
-                        Remove
+                        {sharedUiCopy.checkout.remove}
                       </button>
                     </div>
 
@@ -138,7 +162,7 @@ const MedicinesCheckout: React.FC = () => {
               id="order-summary-heading"
               className="text-xl font-semibold text-white"
             >
-              Order Summary
+              {sharedUiCopy.checkout.orderSummary}
             </h3>
             <div
               className="mt-4 space-y-2 text-sm text-slate-300"
@@ -146,20 +170,20 @@ const MedicinesCheckout: React.FC = () => {
               aria-live="polite"
             >
               <div className="flex justify-between">
-                <span>Subtotal</span>
+                <span>{sharedUiCopy.checkout.subtotal}</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Delivery</span>
+                <span>{sharedUiCopy.checkout.delivery}</span>
                 <span>
                   {deliveryCharge === 0
-                    ? "FREE"
+                    ? sharedUiCopy.checkout.freeDelivery
                     : `$${deliveryCharge.toFixed(2)}`}
                 </span>
               </div>
               <div className="mt-2 border-t border-cyan-300/20 pt-2 text-base font-semibold text-white">
                 <div className="flex justify-between">
-                  <span>Total</span>
+                  <span>{sharedUiCopy.checkout.total}</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
               </div>
@@ -168,6 +192,7 @@ const MedicinesCheckout: React.FC = () => {
             <button
               type="button"
               disabled={cart.length === 0}
+              onClick={handlePlaceOrder}
               className="mt-5 w-full rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-50"
               aria-label={
                 cart.length === 0
@@ -175,7 +200,11 @@ const MedicinesCheckout: React.FC = () => {
                   : `Place medicine order for ${totalItems} items totaling $${total.toFixed(2)}`
               }
             >
-              Place Medicine Order
+              {placeStatus === "loading"
+                ? sharedUiCopy.checkout.placeOrderLoading
+                : !user
+                  ? sharedUiCopy.checkout.loginToPlaceOrder
+                  : sharedUiCopy.checkout.placeOrder}
             </button>
           </aside>
         </div>

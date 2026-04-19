@@ -1,10 +1,53 @@
 import React from "react";
-import { Alert, ScrollView, Text, View } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  Alert,
+  Modal,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import type { Doctor } from "shared";
 import { createAppointment } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
 import { InputField, Pill, PrimaryButton } from "./ui";
+
+const createInitialAppointmentDate = () => {
+  const value = new Date();
+  value.setDate(value.getDate() + 1);
+  value.setHours(11, 0, 0, 0);
+  return value;
+};
+
+const formatAppointmentDate = (value: Date) => {
+  const year = value.getFullYear();
+  const month = `${value.getMonth() + 1}`.padStart(2, "0");
+  const day = `${value.getDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatAppointmentTime = (value: Date) => {
+  const hours = `${value.getHours()}`.padStart(2, "0");
+  const minutes = `${value.getMinutes()}`.padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
+
+const formatAppointmentDateLabel = (value: Date) =>
+  value.toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+const formatAppointmentTimeLabel = (value: Date) =>
+  value.toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
 export const AppointmentsScreenView = ({
   doctors,
@@ -34,8 +77,11 @@ export const AppointmentsScreenView = ({
   const dispatch = useAppDispatch();
   const [doctor, setDoctor] = React.useState(prefilledDoctor);
   const [type, setType] = React.useState("Consultation");
-  const [date, setDate] = React.useState("2026-04-25");
-  const [time, setTime] = React.useState("11:00");
+  const [appointmentDateTime, setAppointmentDateTime] = React.useState(
+    createInitialAppointmentDate,
+  );
+  const [showDatePicker, setShowDatePicker] = React.useState(false);
+  const [showTimePicker, setShowTimePicker] = React.useState(false);
   const [reason, setReason] = React.useState("");
 
   React.useEffect(() => {
@@ -43,6 +89,24 @@ export const AppointmentsScreenView = ({
       setDoctor(prefilledDoctor);
     }
   }, [prefilledDoctor]);
+
+  const closePickers = React.useCallback(() => {
+    setShowDatePicker(false);
+    setShowTimePicker(false);
+  }, []);
+
+  const togglePicker = React.useCallback((target: "date" | "time") => {
+    if (target === "date") {
+      setShowTimePicker(false);
+      setShowDatePicker((current) => !current);
+      return;
+    }
+
+    setShowDatePicker(false);
+    setShowTimePicker((current) => !current);
+  }, []);
+
+  const pickerMode = showDatePicker ? "date" : showTimePicker ? "time" : null;
 
   const handleSubmit = async () => {
     if (!userId) {
@@ -53,13 +117,20 @@ export const AppointmentsScreenView = ({
       onRequireAuth();
       return;
     }
-    if (!(doctor && date && time && reason)) {
+    if (!(doctor && reason.trim())) {
       Alert.alert("Missing details", "Complete all appointment details first.");
       return;
     }
 
     await dispatch(
-      createAppointment({ userId, doctor, date, time, type, reason }),
+      createAppointment({
+        userId,
+        doctor,
+        date: formatAppointmentDate(appointmentDateTime),
+        time: formatAppointmentTime(appointmentDateTime),
+        type,
+        reason: reason.trim(),
+      }),
     ).unwrap();
     setReason("");
     Alert.alert(
@@ -72,6 +143,7 @@ export const AppointmentsScreenView = ({
     <ScrollView
       style={styles.screen}
       contentContainerStyle={styles.screenContent}
+      showsVerticalScrollIndicator={false}
     >
       <View style={styles.panel}>
         <Text style={styles.sectionTitle}>Book appointment</Text>
@@ -109,20 +181,85 @@ export const AppointmentsScreenView = ({
           ))}
         </View>
 
-        <InputField
-          label="Date"
-          value={date}
-          onChangeText={setDate}
-          placeholder="YYYY-MM-DD"
-          styles={styles}
-        />
-        <InputField
-          label="Time"
-          value={time}
-          onChangeText={setTime}
-          placeholder="HH:MM"
-          styles={styles}
-        />
+        <View style={styles.inputBlock}>
+          <Text style={styles.fieldLabel}>Date</Text>
+          <Pressable
+            onPress={() => togglePicker("date")}
+            style={styles.pickerTrigger}
+          >
+            <Text style={styles.pickerTriggerValue}>
+              {formatAppointmentDateLabel(appointmentDateTime)}
+            </Text>
+            <Text style={styles.pickerTriggerMeta}>Tap to change</Text>
+          </Pressable>
+          {showDatePicker && Platform.OS === "android" ? (
+            <View style={styles.pickerSurface}>
+              <DateTimePicker
+                value={appointmentDateTime}
+                mode="date"
+                display="default"
+                minimumDate={new Date()}
+                onChange={(_, selectedValue) => {
+                  setShowDatePicker(false);
+
+                  if (!selectedValue) {
+                    return;
+                  }
+
+                  setAppointmentDateTime((current) => {
+                    const next = new Date(current);
+                    next.setFullYear(
+                      selectedValue.getFullYear(),
+                      selectedValue.getMonth(),
+                      selectedValue.getDate(),
+                    );
+                    return next;
+                  });
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
+
+        <View style={styles.inputBlock}>
+          <Text style={styles.fieldLabel}>Time</Text>
+          <Pressable
+            onPress={() => togglePicker("time")}
+            style={styles.pickerTrigger}
+          >
+            <Text style={styles.pickerTriggerValue}>
+              {formatAppointmentTimeLabel(appointmentDateTime)}
+            </Text>
+            <Text style={styles.pickerTriggerMeta}>Tap to change</Text>
+          </Pressable>
+          {showTimePicker && Platform.OS === "android" ? (
+            <View style={styles.pickerSurface}>
+              <DateTimePicker
+                value={appointmentDateTime}
+                mode="time"
+                display="default"
+                onChange={(_, selectedValue) => {
+                  setShowTimePicker(false);
+
+                  if (!selectedValue) {
+                    return;
+                  }
+
+                  setAppointmentDateTime((current) => {
+                    const next = new Date(current);
+                    next.setHours(
+                      selectedValue.getHours(),
+                      selectedValue.getMinutes(),
+                      0,
+                      0,
+                    );
+                    return next;
+                  });
+                }}
+              />
+            </View>
+          ) : null}
+        </View>
         <InputField
           label="Reason"
           value={reason}
@@ -164,6 +301,66 @@ export const AppointmentsScreenView = ({
           ))
         )}
       </View>
+
+      {Platform.OS === "ios" && pickerMode ? (
+        <Modal
+          transparent
+          animationType="fade"
+          visible
+          onRequestClose={closePickers}
+        >
+          <Pressable style={styles.pickerBackdrop} onPress={closePickers}>
+            <Pressable
+              style={styles.pickerModalCard}
+              onPress={(event) => event.stopPropagation()}
+            >
+              <View style={styles.pickerModalHeader}>
+                <Text style={styles.pickerModalTitle}>
+                  {pickerMode === "date" ? "Select date" : "Select time"}
+                </Text>
+                <Pressable onPress={closePickers}>
+                  <Text style={styles.pickerModalDone}>Done</Text>
+                </Pressable>
+              </View>
+              <DateTimePicker
+                value={appointmentDateTime}
+                mode={pickerMode}
+                display="spinner"
+                minimumDate={pickerMode === "date" ? new Date() : undefined}
+                textColor="#0f172a"
+                themeVariant="light"
+                style={styles.pickerControl}
+                onChange={(_, selectedValue) => {
+                  if (!selectedValue) {
+                    return;
+                  }
+
+                  setAppointmentDateTime((current) => {
+                    const next = new Date(current);
+
+                    if (pickerMode === "date") {
+                      next.setFullYear(
+                        selectedValue.getFullYear(),
+                        selectedValue.getMonth(),
+                        selectedValue.getDate(),
+                      );
+                      return next;
+                    }
+
+                    next.setHours(
+                      selectedValue.getHours(),
+                      selectedValue.getMinutes(),
+                      0,
+                      0,
+                    );
+                    return next;
+                  });
+                }}
+              />
+            </Pressable>
+          </Pressable>
+        </Modal>
+      ) : null}
     </ScrollView>
   );
 };

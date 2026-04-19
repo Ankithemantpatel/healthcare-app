@@ -1,0 +1,29 @@
+[
+  {
+    "id": "pr1",
+    "userId": "u1",
+    "doctor": "Dr. John Doe",
+    "date": "2026-03-01",
+    "diagnosis": "Stage 1 hypertension follow-up",
+    "medicines": ["Telmisartan 40mg", "Amlodipine 5mg"],
+    "notes": "Continue low-sodium diet and daily BP log."
+  },
+  {
+    "id": "pr2",
+    "userId": "u1",
+    "doctor": "Dr. Jane Smith",
+    "date": "2026-02-12",
+    "diagnosis": "Seasonal eczema flare",
+    "medicines": ["Cetirizine 10mg", "Hydrocortisone cream"],
+    "notes": "Apply cream twice daily for 7 days."
+  },
+  {
+    "id": "pr3",
+    "userId": "u2",
+    "doctor": "Dr. Sarah Williams",
+    "date": "2026-01-20",
+    "diagnosis": "Mild asthma episode",
+    "medicines": ["Montelukast 10mg", "Salbutamol inhaler"],
+    "notes": "Use inhaler as needed; review in 4 weeks."
+  }
+]

@@ -1,5 +1,6 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
+import { sharedUiCopy as CONSTANTS } from "shared";
 import { loginUser, registerUser } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
@@ -18,8 +19,12 @@ export const LoginScreenView = ({
 }) => {
   const dispatch = useAppDispatch();
   const [mode, setMode] = React.useState<"login" | "register">("login");
-  const [username, setUsername] = React.useState("admin");
-  const [password, setPassword] = React.useState("admin123");
+  const [username, setUsername] = React.useState(
+    CONSTANTS.auth.demoAccounts.patient.username,
+  );
+  const [password, setPassword] = React.useState(
+    CONSTANTS.auth.demoAccounts.patient.password,
+  );
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phone, setPhone] = React.useState("");
@@ -46,14 +51,9 @@ export const LoginScreenView = ({
       contentContainerStyle={styles.screenContent}
     >
       <View style={styles.heroCard}>
-        <Text style={styles.heroEyebrow}>Unified care, wherever you are</Text>
-        <Text style={styles.heroTitle}>
-          CareBridge mobile carries the full web experience.
-        </Text>
-        <Text style={styles.heroCopy}>
-          Sign in to book visits, browse doctors, manage your medicines, and
-          keep your profile synced.
-        </Text>
+        <Text style={styles.heroEyebrow}>{CONSTANTS.auth.heroEyebrow}</Text>
+        <Text style={styles.heroTitle}>{CONSTANTS.auth.heroTitle}</Text>
+        <Text style={styles.heroCopy}>{CONSTANTS.auth.heroDescription}</Text>
       </View>
 
       <View style={styles.panel}>
@@ -71,7 +71,7 @@ export const LoginScreenView = ({
                 mode === "login" && styles.segmentButtonTextActive,
               ]}
             >
-              Login
+              {CONSTANTS.auth.tabs.login}
             </Text>
           </Pressable>
           <Pressable
@@ -87,23 +87,23 @@ export const LoginScreenView = ({
                 mode === "register" && styles.segmentButtonTextActive,
               ]}
             >
-              Register
+              {CONSTANTS.auth.tabs.register}
             </Text>
           </Pressable>
         </View>
 
         <InputField
-          label="Username"
+          label={CONSTANTS.auth.labels.username}
           value={username}
           onChangeText={setUsername}
-          placeholder="Username"
+          placeholder={CONSTANTS.auth.placeholders.username}
           styles={styles}
         />
         <InputField
-          label="Password"
+          label={CONSTANTS.auth.labels.password}
           value={password}
           onChangeText={setPassword}
-          placeholder="Password"
+          placeholder={CONSTANTS.auth.placeholders.password}
           secureTextEntry
           styles={styles}
         />
@@ -111,31 +111,31 @@ export const LoginScreenView = ({
         {mode === "register" ? (
           <>
             <InputField
-              label="Full Name"
+              label={CONSTANTS.auth.labels.fullName}
               value={name}
               onChangeText={setName}
-              placeholder="Full name"
+              placeholder={CONSTANTS.auth.placeholders.fullName}
               styles={styles}
             />
             <InputField
-              label="Email"
+              label={CONSTANTS.auth.labels.email}
               value={email}
               onChangeText={setEmail}
-              placeholder="Email"
+              placeholder={CONSTANTS.auth.placeholders.email}
               styles={styles}
             />
             <InputField
-              label="Phone"
+              label={CONSTANTS.auth.labels.phone}
               value={phone}
               onChangeText={setPhone}
-              placeholder="Phone"
+              placeholder={CONSTANTS.auth.placeholders.phone}
               styles={styles}
             />
             <InputField
-              label="Address"
+              label={CONSTANTS.auth.labels.address}
               value={address}
               onChangeText={setAddress}
-              placeholder="Street, city, state"
+              placeholder={CONSTANTS.auth.placeholders.address}
               multiline
               styles={styles}
             />
@@ -147,10 +147,10 @@ export const LoginScreenView = ({
         <PrimaryButton
           label={
             authStatus === "loading"
-              ? "Please wait..."
+              ? CONSTANTS.auth.buttons.loading
               : mode === "login"
-                ? "Login"
-                : "Create Account"
+                ? CONSTANTS.auth.buttons.login
+                : CONSTANTS.auth.buttons.createAccount
           }
           onPress={handleSubmit}
           styles={styles}
@@ -160,22 +160,26 @@ export const LoginScreenView = ({
           <Pressable
             onPress={() => {
               setMode("login");
-              setUsername("admin");
-              setPassword("admin123");
+              setUsername(CONSTANTS.auth.demoAccounts.admin.username);
+              setPassword(CONSTANTS.auth.demoAccounts.admin.password);
             }}
             style={styles.secondaryButton}
           >
-            <Text style={styles.secondaryButtonText}>Use admin demo</Text>
+            <Text style={styles.secondaryButtonText}>
+              {CONSTANTS.auth.buttons.useAdminDemo}
+            </Text>
           </Pressable>
           <Pressable
             onPress={() => {
               setMode("login");
-              setUsername("patient1");
-              setPassword("patient123");
+              setUsername(CONSTANTS.auth.demoAccounts.patient.username);
+              setPassword(CONSTANTS.auth.demoAccounts.patient.password);
             }}
             style={styles.secondaryButton}
           >
-            <Text style={styles.secondaryButtonText}>Use patient demo</Text>
+            <Text style={styles.secondaryButtonText}>
+              {CONSTANTS.auth.buttons.usePatientDemo}
+            </Text>
           </Pressable>
         </View>
       </View>

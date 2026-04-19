@@ -1,7 +1,7 @@
 import { createAppStore, type RootState } from "shared/redux";
-import { mockApi } from "../services/mockApi";
+import { apiClient } from "../services/apiClient";
 
-const store = createAppStore({ api: mockApi });
+const store = createAppStore({ api: apiClient });
 
 export type AppDispatch = typeof store.dispatch;
 export type { RootState };

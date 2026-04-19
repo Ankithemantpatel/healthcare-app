@@ -1,0 +1,112 @@
+[
+  {
+    "id": "ord1776638456891",
+    "userId": "u2",
+    "items": [
+      {
+        "medicine": {
+          "id": "med002",
+          "name": "Paracetamol 500mg",
+          "brand": "MediCore",
+          "category": "Antibiotics",
+          "price": 9.49,
+          "packSize": "15 tablets",
+          "requiresPrescription": true,
+          "inStock": true,
+          "image": "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=600&q=80"
+        },
+        "quantity": 1
+      }
+    ],
+    "totalAmount": 14.48,
+    "status": "Order Placed",
+    "placedAt": "2026-04-19T22:40:56.891Z",
+    "eta": "Tomorrow, 7:00 PM"
+  },
+  {
+    "id": "ord1776638268228",
+    "userId": "u2",
+    "items": [
+      {
+        "medicine": {
+          "id": "med001",
+          "name": "Paracetamol 250mg",
+          "brand": "HealthPlus",
+          "category": "Fever & Pain",
+          "price": 4,
+          "packSize": "10 tablets",
+          "requiresPrescription": false,
+          "inStock": true,
+          "image": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80"
+        },
+        "quantity": 1
+      },
+      {
+        "medicine": {
+          "id": "med002",
+          "name": "Paracetamol 500mg",
+          "brand": "MediCore",
+          "category": "Antibiotics",
+          "price": 9.49,
+          "packSize": "15 tablets",
+          "requiresPrescription": true,
+          "inStock": true,
+          "image": "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=600&q=80"
+        },
+        "quantity": 2
+      }
+    ],
+    "totalAmount": 27.97,
+    "status": "Order Placed",
+    "placedAt": "2026-04-19T22:37:48.228Z",
+    "eta": "Tomorrow, 7:00 PM"
+  },
+  {
+    "id": "ord1",
+    "userId": "u1",
+    "items": [
+      {
+        "medicine": {
+          "id": "med001",
+          "name": "Paracetamol 250mg",
+          "brand": "HealthPlus",
+          "category": "Fever & Pain",
+          "price": 4,
+          "packSize": "10 tablets",
+          "requiresPrescription": false,
+          "inStock": true,
+          "image": "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=300&q=60"
+        },
+        "quantity": 2
+      }
+    ],
+    "totalAmount": 8,
+    "status": "Out for Delivery",
+    "placedAt": "2026-04-10T09:30:00.000Z",
+    "eta": "Today, 6:00 PM"
+  },
+  {
+    "id": "ord2",
+    "userId": "u1",
+    "items": [
+      {
+        "medicine": {
+          "id": "med012",
+          "name": "Atorvastatin 500mg",
+          "brand": "NovaCure",
+          "category": "Cardiac Care",
+          "price": 23.47,
+          "packSize": "15 tablets",
+          "requiresPrescription": true,
+          "inStock": true,
+          "image": "https://images.unsplash.com/photo-1631549916768-4119b4123a46?auto=format&fit=crop&w=300&q=60"
+        },
+        "quantity": 1
+      }
+    ],
+    "totalAmount": 23.47,
+    "status": "Delivered",
+    "placedAt": "2026-03-29T14:12:00.000Z",
+    "eta": "Delivered"
+  }
+]

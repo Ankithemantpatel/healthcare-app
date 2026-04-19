@@ -3,8 +3,17 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import "./styles/output.css";
+import { sharedUiCopy as CONSTANTS } from "shared";
 import store from "./redux/store";
-import { initializeAuth } from "shared/redux";
+import {
+  fetchAppointments,
+  fetchDoctors,
+  fetchHealthRecords,
+  fetchMedicines,
+  fetchOrders,
+  fetchProfile,
+  initializeAuth,
+} from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
@@ -14,6 +23,8 @@ import AppointmentBooking from "./pages/AppointmentBooking";
 import PatientProfile from "./pages/PatientProfile";
 import Medicines from "./pages/Medicines";
 import MedicinesCheckout from "./pages/MedicinesCheckout";
+import HealthRecords from "./pages/HealthRecords";
+import Orders from "./pages/Orders";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -24,7 +35,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
   if (authStatus === "loading") {
     return (
       <div className="min-h-screen px-4 pb-10 pt-32 text-slate-200">
-        Restoring session...
+        {CONSTANTS.session.restoring}
       </div>
     );
   }
@@ -35,10 +46,24 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 const App = () => {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const userId = useAppSelector((state) => state.auth.user?.id);
 
   React.useEffect(() => {
     dispatch(initializeAuth());
+    dispatch(fetchDoctors());
+    dispatch(fetchMedicines());
   }, [dispatch]);
+
+  React.useEffect(() => {
+    if (!userId) {
+      return;
+    }
+
+    dispatch(fetchAppointments(userId));
+    dispatch(fetchProfile(userId));
+    dispatch(fetchHealthRecords(userId));
+    dispatch(fetchOrders(userId));
+  }, [dispatch, userId]);
 
   return (
     <BrowserRouter
@@ -61,6 +86,22 @@ const App = () => {
           <Route path="/appointments" element={<AppointmentBooking />} />
           <Route path="/medicines" element={<Medicines />} />
           <Route path="/medicines/checkout" element={<MedicinesCheckout />} />
+          <Route
+            path="/health-records"
+            element={
+              <ProtectedRoute>
+                <HealthRecords />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/profile"
             element={

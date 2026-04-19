@@ -1,6 +1,6 @@
 import React from "react";
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
-import type { UserProfile } from "shared";
+import { sharedUiCopy, type UserProfile } from "shared";
 import { saveProfile } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
@@ -36,6 +36,36 @@ export const ProfileScreenView = ({
     }
   }, [profile]);
 
+  const trimmedProfile = React.useMemo(
+    () => ({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      address: address.trim(),
+      condition: condition.trim(),
+    }),
+    [address, condition, email, name, phone],
+  );
+
+  const hasIncompleteRequiredFields = Object.values(trimmedProfile).some(
+    (value) => value.length === 0,
+  );
+
+  const isUnchanged =
+    profile != null &&
+    trimmedProfile.name === profile.name.trim() &&
+    trimmedProfile.email === profile.email.trim() &&
+    trimmedProfile.phone === profile.phone.trim() &&
+    trimmedProfile.address === profile.address.trim() &&
+    trimmedProfile.condition === profile.condition.trim();
+
+  const isSaveDisabled =
+    status === "loading" ||
+    saveStatus === "loading" ||
+    profile == null ||
+    hasIncompleteRequiredFields ||
+    isUnchanged;
+
   if (!user) {
     return (
       <ScrollView
@@ -43,8 +73,10 @@ export const ProfileScreenView = ({
         contentContainerStyle={styles.screenContent}
       >
         <View style={styles.panel}>
-          <Text style={styles.sectionTitle}>Profile</Text>
-          <Text style={styles.sectionCopy}>Login to manage your profile.</Text>
+          <Text style={styles.sectionTitle}>{sharedUiCopy.profile.title}</Text>
+          <Text style={styles.sectionCopy}>
+            {sharedUiCopy.profile.unauthenticatedMessage}
+          </Text>
         </View>
       </ScrollView>
     );
@@ -56,57 +88,69 @@ export const ProfileScreenView = ({
       contentContainerStyle={styles.screenContent}
     >
       <View style={styles.panel}>
-        <Text style={styles.sectionTitle}>Patient profile</Text>
+        <Text style={styles.sectionTitle}>{sharedUiCopy.profile.title}</Text>
         <Text style={styles.sectionCopy}>
-          Keep your contact details, address, and health condition current.
+          {sharedUiCopy.profile.description}
         </Text>
         {status === "loading" ? <ActivityIndicator color="#67e8f9" /> : null}
         <InputField
-          label="Name"
+          label={sharedUiCopy.profile.labels.name}
           value={name}
           onChangeText={setName}
-          placeholder="Full name"
+          placeholder={sharedUiCopy.profile.placeholders.name}
           styles={styles}
         />
         <InputField
-          label="Email"
+          label={sharedUiCopy.profile.labels.email}
           value={email}
           onChangeText={setEmail}
-          placeholder="Email"
+          placeholder={sharedUiCopy.profile.placeholders.email}
           styles={styles}
         />
         <InputField
-          label="Phone"
+          label={sharedUiCopy.profile.labels.phone}
           value={phone}
           onChangeText={setPhone}
-          placeholder="Phone"
+          placeholder={sharedUiCopy.profile.placeholders.phone}
           styles={styles}
         />
         <InputField
-          label="Address"
+          label={sharedUiCopy.profile.labels.address}
           value={address}
           onChangeText={setAddress}
-          placeholder="Street, city, state"
+          placeholder={sharedUiCopy.profile.placeholders.address}
           multiline
           styles={styles}
         />
         <InputField
-          label="Condition"
+          label={sharedUiCopy.profile.labels.condition}
           value={condition}
           onChangeText={setCondition}
-          placeholder="Condition"
+          placeholder={sharedUiCopy.profile.placeholders.condition}
           styles={styles}
         />
         <PrimaryButton
-          label={saveStatus === "loading" ? "Saving..." : "Save Profile"}
+          label={
+            saveStatus === "loading"
+              ? sharedUiCopy.profile.buttons.saving
+              : sharedUiCopy.profile.buttons.save
+          }
+          disabled={isSaveDisabled}
           onPress={async () => {
+            if (isSaveDisabled) {
+              return;
+            }
+
             await dispatch(
               saveProfile({
                 userId: user.id,
-                updates: { name, email, phone, address, condition },
+                updates: trimmedProfile,
               }),
             ).unwrap();
-            Alert.alert("Profile updated", "Your profile has been saved.");
+            Alert.alert(
+              sharedUiCopy.profile.messages.updatedTitle,
+              sharedUiCopy.profile.messages.updatedBody,
+            );
           }}
           styles={styles}
         />

@@ -1,6 +1,6 @@
 import { createAppStore, type RootState } from "shared/redux";
 import type { CartItem } from "shared";
-import { mockApi } from "../services/mockApi";
+import { apiClient } from "../services/apiClient";
 
 const CART_KEY = "mock_medicine_cart";
 
@@ -19,7 +19,7 @@ const loadCart = (): CartItem[] => {
 };
 
 const store = createAppStore({
-  api: mockApi,
+  api: apiClient,
   // Only cart data is hydrated on web; other slices initialize from reducers.
   preloadedState: {
     medicines: {

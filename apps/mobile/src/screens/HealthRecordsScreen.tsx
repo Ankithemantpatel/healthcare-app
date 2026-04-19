@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
-import type { PrescriptionRecord } from "shared";
+import { sharedUiCopy, type PrescriptionRecord } from "shared";
 import type { SharedStyles } from "./types";
 
 export const HealthRecordsScreenView = ({
@@ -29,23 +29,23 @@ export const HealthRecordsScreenView = ({
     return `
       <div class="letterhead">
         <div class="letterhead-top">
-          <div class="hospital-name">CareBridge Multi-Specialty Clinic</div>
-          <div class="hospital-sub">12 Wellness Avenue, San Francisco, CA • +1 (555) 010-9000 • carebridge.health</div>
+          <div class="hospital-name">${sharedUiCopy.healthRecords.document.clinicName}</div>
+          <div class="hospital-sub">${sharedUiCopy.healthRecords.document.clinicSub}</div>
         </div>
         <div class="doc-row">
-          <div><strong>Prescription ID:</strong> ${record.id}</div>
-          <div><strong>Date:</strong> ${record.date}</div>
+          <div><strong>${sharedUiCopy.healthRecords.document.prescriptionIdLabel}:</strong> ${record.id}</div>
+          <div><strong>${sharedUiCopy.healthRecords.document.dateLabel}:</strong> ${record.date}</div>
         </div>
-        <div class="title">Official Prescription</div>
-        <div class="meta"><strong>Consultant:</strong> ${record.doctor}</div>
-        <div class="meta"><strong>Diagnosis:</strong> ${record.diagnosis}</div>
-        <div class="section">Prescribed Medicines</div>
+        <div class="title">${sharedUiCopy.healthRecords.document.title}</div>
+        <div class="meta"><strong>${sharedUiCopy.healthRecords.document.consultantLabel}:</strong> ${record.doctor}</div>
+        <div class="meta"><strong>${sharedUiCopy.healthRecords.document.diagnosisLabel}:</strong> ${record.diagnosis}</div>
+        <div class="section">${sharedUiCopy.healthRecords.document.prescribedMedicinesLabel}</div>
         <ul>${medicines}</ul>
-        <div class="section">Clinical Notes</div>
+        <div class="section">${sharedUiCopy.healthRecords.document.clinicalNotesLabel}</div>
         <div class="notes">${record.notes}</div>
         <div class="footer">
-          <div class="signature-line">Digitally signed by ${record.doctor}</div>
-          <div class="stamp">CareBridge Verified Prescription</div>
+          <div class="signature-line">${sharedUiCopy.healthRecords.document.signaturePrefix} ${record.doctor}</div>
+          <div class="stamp">${sharedUiCopy.healthRecords.document.stampText}</div>
         </div>
       </div>
     `;
@@ -56,6 +56,7 @@ export const HealthRecordsScreenView = ({
       <html>
         <head>
           <meta charset="utf-8" />
+          <title>${sharedUiCopy.healthRecords.document.pageTitle}</title>
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; color: #0f172a; padding: 28px; }
             .letterhead { border: 2px solid #0f766e; border-radius: 10px; overflow: hidden; }
@@ -121,10 +122,13 @@ export const HealthRecordsScreenView = ({
   };
 
   const sharePdf = async (filePath: string) => {
+    const fileUrl = filePath.startsWith("file://")
+      ? filePath
+      : `file://${filePath}`;
+
     await Share.share({
-      url: `file://${filePath}`,
-      message: "CareBridge prescription PDF",
-      title: "Prescription PDF",
+      url: fileUrl,
+      title: sharedUiCopy.healthRecords.shareTitle,
     });
   };
 
@@ -132,7 +136,7 @@ export const HealthRecordsScreenView = ({
     try {
       const file = await convertHtmlToPdf(
         buildPrescriptionHtml(record),
-        `carebridge-prescription-${record.id}`,
+        `${sharedUiCopy.healthRecords.document.singleFilePrefix}-${record.id}`,
       );
       if (!file.filePath) {
         throw new Error("No output path");
@@ -140,8 +144,8 @@ export const HealthRecordsScreenView = ({
       await sharePdf(file.filePath);
     } catch (error) {
       Alert.alert(
-        "Export failed",
-        `Unable to export this prescription PDF right now. ${String(error)}`,
+        sharedUiCopy.healthRecords.exportFailureTitle,
+        `${sharedUiCopy.healthRecords.exportSingleFailurePrefix} ${String(error)}`,
       );
     }
   };
@@ -153,7 +157,7 @@ export const HealthRecordsScreenView = ({
     try {
       const file = await convertHtmlToPdf(
         buildMergedHtml(records),
-        `carebridge-all-prescriptions-${Date.now()}`,
+        `${sharedUiCopy.healthRecords.document.allFilePrefix}-${Date.now()}`,
       );
       if (!file.filePath) {
         throw new Error("No output path");
@@ -161,8 +165,8 @@ export const HealthRecordsScreenView = ({
       await sharePdf(file.filePath);
     } catch (error) {
       Alert.alert(
-        "Export failed",
-        `Unable to export prescription PDFs right now. ${String(error)}`,
+        sharedUiCopy.healthRecords.exportFailureTitle,
+        `${sharedUiCopy.healthRecords.exportAllFailurePrefix} ${String(error)}`,
       );
     }
   };
@@ -173,20 +177,26 @@ export const HealthRecordsScreenView = ({
       contentContainerStyle={styles.screenContent}
     >
       <View style={styles.panelHeader}>
-        <Text style={styles.sectionTitle}>Health Records</Text>
+        <Text style={styles.sectionTitle}>
+          {sharedUiCopy.healthRecords.title}
+        </Text>
         <Text style={styles.sectionCopy}>
-          Past prescriptions and doctor notes from previous visits.
+          {sharedUiCopy.healthRecords.description}
         </Text>
       </View>
       {records.length > 0 ? (
         <Pressable onPress={handleDownloadAll} style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Download All PDFs</Text>
+          <Text style={styles.secondaryButtonText}>
+            {sharedUiCopy.healthRecords.downloadAll}
+          </Text>
         </Pressable>
       ) : null}
       {status === "loading" ? <ActivityIndicator color="#67e8f9" /> : null}
       {records.length === 0 && status !== "loading" ? (
         <View style={styles.panel}>
-          <Text style={styles.sectionCopy}>No prescriptions found yet.</Text>
+          <Text style={styles.sectionCopy}>
+            {sharedUiCopy.healthRecords.empty}
+          </Text>
         </View>
       ) : null}
       {records.map((record) => (
@@ -194,19 +204,26 @@ export const HealthRecordsScreenView = ({
           <View style={styles.rowBetween}>
             <Text style={styles.sectionHeadline}>{record.diagnosis}</Text>
             <Pressable onPress={() => handleDownloadRecord(record)}>
-              <Text style={styles.linkText}>PDF</Text>
+              <Text style={styles.linkText}>
+                {sharedUiCopy.healthRecords.downloadOne}
+              </Text>
             </Pressable>
           </View>
           <Text style={styles.sectionCopy}>
-            {record.doctor} • {record.date}
+            {sharedUiCopy.healthRecords.consultantLabel}: {record.doctor} •{" "}
+            {record.date}
           </Text>
-          <Text style={styles.fieldLabel}>Prescribed medicines</Text>
+          <Text style={styles.fieldLabel}>
+            {sharedUiCopy.healthRecords.prescribedMedicines}
+          </Text>
           {record.medicines.map((medicine) => (
             <Text key={`${record.id}-${medicine}`} style={styles.sectionCopy}>
               • {medicine}
             </Text>
           ))}
-          <Text style={styles.fieldLabel}>Doctor notes</Text>
+          <Text style={styles.fieldLabel}>
+            {sharedUiCopy.healthRecords.doctorNotes}
+          </Text>
           <Text style={styles.sectionCopy}>{record.notes}</Text>
         </View>
       ))}

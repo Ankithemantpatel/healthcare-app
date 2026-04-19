@@ -1,16 +1,18 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy: CONSTANTS } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const {
   createAsyncState,
   getActionErrorMessage,
 } = require("../core/stateHelpers");
 
 const fetchHealthRecords = createAsyncThunk(
-  "healthRecords/fetchHealthRecords",
+  REDUX_ACTION_TYPES.healthRecords.fetchHealthRecords,
   async (userId, { extra }) => extra.api.getHealthRecords(userId),
 );
 
 const healthRecordsSlice = createSlice({
-  name: "healthRecords",
+  name: REDUX_SLICES.healthRecords,
   initialState: {
     items: [],
     ...createAsyncState(),
@@ -30,7 +32,7 @@ const healthRecordsSlice = createSlice({
         state.status = "failed";
         state.error = getActionErrorMessage(
           action,
-          "Failed to fetch health records",
+          CONSTANTS.feedback.errors.healthRecords.fetch,
         );
       });
   },

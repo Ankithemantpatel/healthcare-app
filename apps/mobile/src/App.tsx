@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import {
   filterMedicinesCatalog,
   getMedicineCategories,
+  sharedUiCopy as CONSTANTS,
   type MedicineSortOption,
 } from "shared";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
@@ -49,14 +50,33 @@ type RouteKey =
   | "orders";
 
 const routes: Array<{ key: RouteKey; label: string; protected?: boolean }> = [
-  { key: "login", label: "Home" },
-  { key: "dashboard", label: "Dashboard", protected: true },
-  { key: "doctors", label: "Doctors" },
-  { key: "appointments", label: "Appointments" },
-  { key: "medicines", label: "Medicines" },
-  { key: "healthRecords", label: "Health Records", protected: true },
-  { key: "orders", label: "Orders", protected: true },
-  { key: "profile", label: "Profile", protected: true },
+  { key: "login", label: CONSTANTS.navigation.routes.login },
+  {
+    key: "dashboard",
+    label: CONSTANTS.navigation.routes.dashboard,
+    protected: true,
+  },
+  { key: "doctors", label: CONSTANTS.navigation.routes.doctors },
+  {
+    key: "appointments",
+    label: CONSTANTS.navigation.routes.appointments,
+  },
+  { key: "medicines", label: CONSTANTS.navigation.routes.medicines },
+  {
+    key: "healthRecords",
+    label: CONSTANTS.navigation.routes.healthRecords,
+    protected: true,
+  },
+  {
+    key: "orders",
+    label: CONSTANTS.navigation.routes.orders,
+    protected: true,
+  },
+  {
+    key: "profile",
+    label: CONSTANTS.navigation.routes.profile,
+    protected: true,
+  },
 ];
 
 const AppShell = () => {
@@ -112,7 +132,9 @@ const AppShell = () => {
         ? routes
             .filter((item) => item.key !== "login")
             .map((item) =>
-              item.key === "dashboard" ? { ...item, label: "Home" } : item,
+              item.key === "dashboard"
+                ? { ...item, label: CONSTANTS.navigation.routes.login }
+                : item,
             )
         : routes.filter((item) => !item.protected),
     [auth.isAuthenticated],
@@ -217,7 +239,9 @@ const AppShell = () => {
                     }}
                     style={styles.drawerLogoutItem}
                   >
-                    <Text style={styles.drawerLogoutText}>Logout</Text>
+                    <Text style={styles.drawerLogoutText}>
+                      {CONSTANTS.navigation.logout}
+                    </Text>
                   </Pressable>
                 </>
               ) : null}
@@ -487,6 +511,84 @@ const styles = StyleSheet.create({
     gap: 24,
     marginBottom: 8,
   },
+  orderCard: {
+    backgroundColor: "rgba(15,23,42,0.72)",
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: "rgba(103,232,249,0.18)",
+    padding: 28,
+    gap: 20,
+    marginBottom: 8,
+  },
+  orderHeader: {
+    gap: 12,
+  },
+  orderHeaderCopy: {
+    gap: 8,
+  },
+  orderEyebrow: {
+    color: "#a5f3fc",
+    textTransform: "uppercase",
+    letterSpacing: 1.5,
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  orderTitle: {
+    color: "#67e8f9",
+    fontSize: 26,
+    fontWeight: "800",
+    lineHeight: 31,
+  },
+  orderEtaBadge: {
+    alignSelf: "flex-start",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(103,232,249,0.25)",
+    backgroundColor: "rgba(34,211,238,0.12)",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  orderEtaBadgeText: {
+    color: "#a5f3fc",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  orderBody: {
+    gap: 16,
+  },
+  orderItemsCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(103,232,249,0.12)",
+    backgroundColor: "rgba(2,6,23,0.18)",
+    padding: 16,
+    gap: 10,
+  },
+  orderItemRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 12,
+  },
+  orderItemText: {
+    flex: 1,
+    color: "#cbd5e1",
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  orderItemQuantity: {
+    color: "#e2f8ff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  orderSummaryCard: {
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(103,232,249,0.12)",
+    backgroundColor: "rgba(2,6,23,0.18)",
+    padding: 16,
+    gap: 12,
+  },
   panelHeader: {
     marginBottom: 4,
   },
@@ -616,6 +718,74 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     color: "#0f172a",
     fontSize: 16,
+  },
+  pickerTrigger: {
+    minHeight: 58,
+    borderRadius: 16,
+    backgroundColor: "#eef2ff",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    justifyContent: "center",
+    gap: 4,
+  },
+  pickerTriggerValue: {
+    color: "#0f172a",
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  pickerTriggerMeta: {
+    color: "#64748b",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  pickerSurface: {
+    marginTop: 10,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: "rgba(148,163,184,0.26)",
+    backgroundColor: "#ffffff",
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    overflow: "hidden",
+    shadowColor: "#020617",
+    shadowOpacity: 0.14,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 4,
+  },
+  pickerControl: {
+    backgroundColor: "#ffffff",
+    alignSelf: "stretch",
+  },
+  pickerBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(2,6,23,0.45)",
+    justifyContent: "flex-end",
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+  },
+  pickerModalCard: {
+    borderRadius: 24,
+    backgroundColor: "#ffffff",
+    paddingTop: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+  pickerModalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  pickerModalTitle: {
+    color: "#0f172a",
+    fontSize: 17,
+    fontWeight: "800",
+  },
+  pickerModalDone: {
+    color: "#0284c7",
+    fontSize: 15,
+    fontWeight: "700",
   },
   textArea: {
     minHeight: 110,

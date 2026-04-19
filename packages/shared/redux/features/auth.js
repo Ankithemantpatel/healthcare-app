@@ -1,28 +1,33 @@
 const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { sharedUiCopy } = require("../../uiText");
+const { REDUX_ACTION_TYPES, REDUX_SLICES } = require("../core/actionTypes");
 const { getActionErrorMessage } = require("../core/stateHelpers");
 
 const initializeAuth = createAsyncThunk(
-  "auth/initializeAuth",
+  REDUX_ACTION_TYPES.auth.initializeAuth,
   async (_, { extra }) => extra.api.getSession(),
 );
 
 const loginUser = createAsyncThunk(
-  "auth/loginUser",
+  REDUX_ACTION_TYPES.auth.loginUser,
   async ({ username, password }, { extra }) =>
     extra.api.login(username, password),
 );
 
 const registerUser = createAsyncThunk(
-  "auth/registerUser",
+  REDUX_ACTION_TYPES.auth.registerUser,
   async (payload, { extra }) => extra.api.register(payload),
 );
 
-const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { extra }) => {
-  await extra.api.logout();
-});
+const logoutUser = createAsyncThunk(
+  REDUX_ACTION_TYPES.auth.logoutUser,
+  async (_, { extra }) => {
+    await extra.api.logout();
+  },
+);
 
 const authSlice = createSlice({
-  name: "auth",
+  name: REDUX_SLICES.auth,
   initialState: {
     user: null,
     token: null,
@@ -48,7 +53,7 @@ const authSlice = createSlice({
         state.status = "failed";
         state.error = getActionErrorMessage(
           action,
-          "Failed to initialize auth",
+          sharedUiCopy.feedback.errors.auth.initialize,
         );
       })
       .addCase(loginUser.pending, (state) => {
@@ -63,7 +68,10 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = getActionErrorMessage(action, "Login failed");
+        state.error = getActionErrorMessage(
+          action,
+          sharedUiCopy.feedback.errors.auth.login,
+        );
         state.isAuthenticated = false;
       })
       .addCase(registerUser.pending, (state) => {
@@ -78,7 +86,10 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = getActionErrorMessage(action, "Registration failed");
+        state.error = getActionErrorMessage(
+          action,
+          sharedUiCopy.feedback.errors.auth.register,
+        );
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
