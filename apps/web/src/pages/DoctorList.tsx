@@ -33,6 +33,9 @@ const DoctorList: React.FC = () => {
                   src={doctor.image}
                   alt={doctor.name}
                   className="h-16 w-16 rounded-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder-avatar.png";
+                  }}
                 />
                 <div className="flex-1">
                   <h2 className="text-xl font-semibold text-blue-600 mb-1">

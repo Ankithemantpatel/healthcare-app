@@ -194,6 +194,9 @@ const Medicines: React.FC = () => {
                   src={medicine.image}
                   alt={`${medicine.name} product pack`}
                   className="h-40 w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder-avatar.png";
+                  }}
                 />
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-3">

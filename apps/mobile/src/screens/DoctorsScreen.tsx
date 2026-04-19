@@ -26,29 +26,40 @@ export const DoctorsScreenView = ({
       </Text>
     </View>
     {status === "loading" ? <ActivityIndicator color="#67e8f9" /> : null}
-    {doctors.map((doctor) => (
-      <View key={doctor.id} style={styles.doctorCard}>
-        <Image source={{ uri: doctor.image }} style={styles.doctorAvatar} />
-        <View style={styles.doctorBody}>
-          <Text style={styles.doctorName}>{doctor.name}</Text>
-          <Text style={styles.doctorMeta}>
-            {doctor.specialty} • {doctor.hospital}
-          </Text>
-          <Text style={styles.doctorMeta}>
-            Fee ${doctor.consultationFee} • {doctor.experienceYears} yrs •{" "}
-            {doctor.rating}/5
-          </Text>
-          <Text style={styles.doctorMeta}>
-            Availability: {doctor.availability}
-          </Text>
-          <PrimaryButton
-            label="Book Appointment"
-            onPress={() => onBook(doctor.name)}
-            compact
-            styles={styles}
+    {doctors.map((doctor) => {
+      const [error, setError] = React.useState(false);
+      return (
+        <View key={doctor.id} style={styles.doctorCard}>
+          <Image
+            source={
+              error
+                ? require("../assets/placeholder-avatar.png")
+                : { uri: doctor.image }
+            }
+            style={styles.doctorAvatar}
+            onError={() => setError(true)}
           />
+          <View style={styles.doctorBody}>
+            <Text style={styles.doctorName}>{doctor.name}</Text>
+            <Text style={styles.doctorMeta}>
+              {doctor.specialty} • {doctor.hospital}
+            </Text>
+            <Text style={styles.doctorMeta}>
+              Fee ${doctor.consultationFee} • {doctor.experienceYears} yrs •{" "}
+              {doctor.rating}/5
+            </Text>
+            <Text style={styles.doctorMeta}>
+              Availability: {doctor.availability}
+            </Text>
+            <PrimaryButton
+              label="Book Appointment"
+              onPress={() => onBook(doctor.name)}
+              compact
+              styles={styles}
+            />
+          </View>
         </View>
-      </View>
-    ))}
+      );
+    })}
   </ScrollView>
 );

@@ -19,12 +19,14 @@ import { Pill, PrimaryButton } from "./ui";
 const MedicineImage = React.memo(
   ({ uri, style }: { uri: string; style: any }) => {
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     return (
       <View style={[style, { backgroundColor: "#f1f5f9" }]}>
         <Image
-          source={{ uri }}
+          source={error ? require("../assets/placeholder-avatar.png") : { uri }}
           style={style}
           onLoadEnd={() => setLoading(false)}
+          onError={() => setError(true)}
           progressiveRenderingEnabled={true}
         />
         {loading && (
