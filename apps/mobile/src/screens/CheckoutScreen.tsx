@@ -1,14 +1,14 @@
 import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import type { CartItem } from "shared";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   addToCart,
   clearCart,
   decrementCartItem,
+  placeOrder,
   removeFromCart,
-} from "../redux/medicinesSlice";
-import { placeOrder } from "../redux/ordersSlice";
+} from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
 import { PrimaryButton, SummaryRow } from "./ui";
 

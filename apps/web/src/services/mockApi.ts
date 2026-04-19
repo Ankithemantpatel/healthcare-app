@@ -1,3 +1,5 @@
+import { seedOrders, seedPrescriptions } from "shared";
+
 export interface UserRecord {
   id: string;
   username: string;
@@ -5,6 +7,7 @@ export interface UserRecord {
   name: string;
   email: string;
   phone: string;
+  address: string;
   condition: string;
 }
 
@@ -14,6 +17,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string;
+  address: string;
   condition: string;
 }
 
@@ -23,6 +27,7 @@ export interface RegisterPayload {
   name: string;
   email: string;
   phone?: string;
+  address?: string;
   condition?: string;
 }
 
@@ -61,6 +66,37 @@ export interface Medicine {
   image: string;
 }
 
+export interface CartItem {
+  medicine: Medicine;
+  quantity: number;
+}
+
+export interface PrescriptionRecord {
+  id: string;
+  userId: string;
+  doctor: string;
+  date: string;
+  diagnosis: string;
+  medicines: string[];
+  notes: string;
+}
+
+export interface MedicineOrder {
+  id: string;
+  userId: string;
+  items: CartItem[];
+  totalAmount: number;
+  status:
+    | "Order Placed"
+    | "Confirmed"
+    | "Packed"
+    | "Out for Delivery"
+    | "Delivered"
+    | "Cancelled";
+  placedAt: string;
+  eta: string;
+}
+
 interface AuthSession {
   userId: string;
   token: string;
@@ -70,6 +106,8 @@ const USERS_KEY = "mock_users";
 const DOCTORS_KEY = "mock_doctors";
 const APPOINTMENTS_KEY = "mock_appointments";
 const MEDICINES_KEY = "mock_medicines";
+const PRESCRIPTIONS_KEY = "mock_prescriptions";
+const ORDERS_KEY = "mock_orders";
 const SESSION_KEY = "mock_auth_session";
 
 const delay = (ms = 350) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -93,6 +131,7 @@ const stripUserSecrets = (user: UserRecord): UserProfile => ({
   name: user.name,
   email: user.email,
   phone: user.phone,
+  address: user.address,
   condition: user.condition,
 });
 
@@ -101,8 +140,17 @@ const seedDataIfNeeded = async (): Promise<void> => {
   const doctors = readStorage<Doctor[]>(DOCTORS_KEY);
   const appointments = readStorage<Appointment[]>(APPOINTMENTS_KEY);
   const medicines = readStorage<Medicine[]>(MEDICINES_KEY);
+  const prescriptions = readStorage<PrescriptionRecord[]>(PRESCRIPTIONS_KEY);
+  const orders = readStorage<MedicineOrder[]>(ORDERS_KEY);
 
-  if (users && doctors && appointments && medicines) {
+  if (
+    users &&
+    doctors &&
+    appointments &&
+    medicines &&
+    prescriptions &&
+    orders
+  ) {
     // Keep medicines synced with public mock JSON so dataset updates are reflected.
     const medicinesRes = await fetch("/mock/medicines.json");
     const medicinesData = (await medicinesRes.json()) as Medicine[];
@@ -130,6 +178,8 @@ const seedDataIfNeeded = async (): Promise<void> => {
   writeStorage(DOCTORS_KEY, doctorsData);
   writeStorage(APPOINTMENTS_KEY, appointmentsData);
   writeStorage(MEDICINES_KEY, medicinesData);
+  writeStorage(PRESCRIPTIONS_KEY, seedPrescriptions);
+  writeStorage(ORDERS_KEY, seedOrders);
 };
 
 export const mockApi = {
@@ -181,6 +231,7 @@ export const mockApi = {
       name: payload.name,
       email: payload.email,
       phone: payload.phone ?? "",
+      address: payload.address ?? "",
       condition: payload.condition ?? "N/A",
     };
 
@@ -285,5 +336,39 @@ export const mockApi = {
 
     writeStorage(USERS_KEY, users);
     return stripUserSecrets(users[index]);
+  },
+
+  async getHealthRecords(userId: string): Promise<PrescriptionRecord[]> {
+    await seedDataIfNeeded();
+    await delay(180);
+    const prescriptions =
+      readStorage<PrescriptionRecord[]>(PRESCRIPTIONS_KEY) ?? [];
+    return prescriptions.filter((item) => item.userId === userId);
+  },
+
+  async getOrders(userId: string): Promise<MedicineOrder[]> {
+    await seedDataIfNeeded();
+    await delay(180);
+    const orders = readStorage<MedicineOrder[]>(ORDERS_KEY) ?? [];
+    return orders.filter((item) => item.userId === userId);
+  },
+
+  async placeOrder(
+    payload: Omit<MedicineOrder, "id" | "status" | "placedAt" | "eta">,
+  ): Promise<MedicineOrder> {
+    await seedDataIfNeeded();
+    await delay(240);
+
+    const orders = readStorage<MedicineOrder[]>(ORDERS_KEY) ?? [];
+    const created: MedicineOrder = {
+      id: `ord${Date.now()}`,
+      ...payload,
+      status: "Order Placed",
+      placedAt: new Date().toISOString(),
+      eta: "Tomorrow, 7:00 PM",
+    };
+
+    writeStorage(ORDERS_KEY, [created, ...orders]);
+    return created;
   },
 };

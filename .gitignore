@@ -1,4 +1,4 @@
-# dependencies
+    # dependencies
 node_modules/
 **/node_modules/
 
@@ -46,3 +46,10 @@ apps/mobile/android/build/
 
 # local docs
 INTERVIEW_GUIDE.md
+INTERVIEW_REVISION_SHEET.md
+INTERVIEW_QA_BANK.md
+INTERVIEW_10_MIN_PITCH.md
+INTERVIEW_NIGHT_BEFORE_CHECKLIST.md
+INTERVIEW_MOCK_TRANSCRIPT.md
+INTERVIEW_BEHAVIORAL_STAR.md
+INTERVIEW_COUNTER_QUESTIONS.md

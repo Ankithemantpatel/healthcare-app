@@ -18,28 +18,26 @@ import {
   getMedicineCategories,
   type MedicineSortOption,
 } from "shared";
-import { useAppDispatch, useAppSelector } from "./redux/hooks";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import {
   initializeAuth,
   loginUser,
   logoutUser,
   registerUser,
-} from "./redux/authSlice";
-import { fetchDoctors } from "./redux/doctorsSlice";
-import {
+  fetchDoctors,
   createAppointment,
   fetchAppointments,
-} from "./redux/appointmentsSlice";
-import {
   addToCart,
   clearCart,
   decrementCartItem,
   fetchMedicines,
   removeFromCart,
-} from "./redux/medicinesSlice";
-import { fetchProfile, saveProfile } from "./redux/profileSlice";
-import { fetchHealthRecords } from "./redux/healthRecordsSlice";
-import { fetchOrders } from "./redux/ordersSlice";
+  fetchProfile,
+  saveProfile,
+  fetchHealthRecords,
+  fetchOrders,
+  placeOrder,
+} from "shared/redux";
 import store from "./redux/store";
 import type { Doctor, Medicine, UserProfile } from "shared";
 import {
@@ -1340,8 +1338,8 @@ const styles = StyleSheet.create({
   },
   appShell: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingHorizontal: 18,
+    paddingTop: 12,
     backgroundColor: "#0a1730",
   },
   brandRow: {
@@ -1453,15 +1451,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   screenContent: {
-    paddingBottom: 40,
-    gap: 14,
+    paddingHorizontal: 8,
+    paddingBottom: 50,
+    gap: 28,
   },
   heroCard: {
     backgroundColor: "rgba(15,23,42,0.72)",
-    borderRadius: 24,
+    borderRadius: 28,
     borderWidth: 1,
     borderColor: "rgba(103,232,249,0.22)",
-    padding: 20,
+    padding: 28,
+    marginBottom: 8,
   },
   heroEyebrow: {
     color: "#7dd3fc",
@@ -1472,24 +1472,25 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     color: "#f8fafc",
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: "800",
-    marginTop: 8,
-    lineHeight: 34,
+    marginTop: 12,
+    lineHeight: 38,
   },
   heroCopy: {
     color: "#cbd5e1",
-    fontSize: 15,
-    lineHeight: 22,
-    marginTop: 8,
+    fontSize: 16,
+    lineHeight: 24,
+    marginTop: 14,
   },
   panel: {
     backgroundColor: "rgba(15,23,42,0.72)",
-    borderRadius: 24,
+    borderRadius: 28,
     borderWidth: 1,
     borderColor: "rgba(103,232,249,0.18)",
-    padding: 18,
-    gap: 12,
+    padding: 28,
+    gap: 24,
+    marginBottom: 8,
   },
   panelHeader: {
     marginBottom: 4,
@@ -1609,8 +1610,9 @@ const styles = StyleSheet.create({
     color: "#a5f3fc",
     textTransform: "uppercase",
     letterSpacing: 2,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "700",
+    marginBottom: 12,
   },
   textInput: {
     minHeight: 52,
@@ -1626,13 +1628,14 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   searchInput: {
-    minHeight: 56,
+    minHeight: 58,
     borderRadius: 18,
     backgroundColor: "#ffffff",
-    paddingHorizontal: 18,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     color: "#0f172a",
     fontSize: 18,
-    marginBottom: 4,
+    marginBottom: 8,
   },
   primaryButton: {
     backgroundColor: "#22d3ee",
@@ -1703,25 +1706,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   pillRow: {
-    gap: 10,
-    paddingBottom: 4,
+    gap: 14,
+    paddingBottom: 8,
   },
   inlineRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
+    gap: 14,
+    marginBottom: 12,
   },
   pill: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     borderRadius: 999,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.28)",
-    backgroundColor: "rgba(15,23,42,0.5)",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(15,23,42,0.4)",
   },
   pillActive: {
-    backgroundColor: "rgba(34,211,238,0.22)",
-    borderColor: "rgba(103,232,249,0.65)",
+    backgroundColor: "rgba(34,211,238,0.28)",
+    borderColor: "rgba(103,232,249,0.8)",
   },
   pillText: {
     color: "#e2e8f0",
@@ -1746,15 +1750,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "rgba(15,23,42,0.8)",
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: "rgba(103,232,249,0.18)",
-    padding: 16,
-    gap: 12,
+    padding: 24,
+    gap: 18,
+    marginBottom: 8,
   },
   cartSummaryTitle: {
     color: "#e2f8ff",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "800",
   },
   cartSummaryCopy: {
@@ -1764,8 +1769,11 @@ const styles = StyleSheet.create({
   },
   resultsText: {
     color: "#cbd5e1",
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
+    marginTop: 12,
+    marginBottom: 16,
+    paddingHorizontal: 8,
   },
   medicineCard: {
     backgroundColor: "rgba(15,23,42,0.75)",
@@ -1773,15 +1781,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(103,232,249,0.18)",
     overflow: "hidden",
-    marginBottom: 14,
+    marginBottom: 18,
+    marginHorizontal: 8,
   },
   medicineImage: {
     width: "100%",
-    height: 220,
+    height: 240,
   },
   medicineBody: {
-    padding: 18,
-    gap: 10,
+    padding: 22,
+    gap: 16,
   },
   rowBetween: {
     flexDirection: "row",

@@ -5,12 +5,8 @@ import {
   getMedicineCategories,
   type MedicineSortOption,
 } from "shared";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import {
-  addToCart,
-  decrementCartItem,
-  fetchMedicines,
-} from "../redux/medicinesSlice";
+import { addToCart, decrementCartItem, fetchMedicines } from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const Medicines: React.FC = () => {
   const dispatch = useAppDispatch();

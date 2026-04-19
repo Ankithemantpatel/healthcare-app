@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { loginUser } from "../redux/authSlice";
+import { loginUser } from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();

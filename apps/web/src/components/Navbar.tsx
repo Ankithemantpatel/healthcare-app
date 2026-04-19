@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { logoutUser } from "../redux/authSlice";
+import { logoutUser } from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const Navbar: React.FC = () => {
   const dispatch = useAppDispatch();

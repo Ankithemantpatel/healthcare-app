@@ -1,36 +1,28 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { Appointment } from "shared";
-import { mockApi } from "../services/mockApi";
+const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const {
+  createAsyncState,
+  createMutationState,
+  getActionErrorMessage,
+} = require("../core/stateHelpers");
 
-interface AppointmentsState {
-  items: Appointment[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  createStatus: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: AppointmentsState = {
-  items: [],
-  status: "idle",
-  createStatus: "idle",
-  error: null,
-};
-
-export const fetchAppointments = createAsyncThunk(
+const fetchAppointments = createAsyncThunk(
   "appointments/fetchAppointments",
-  async (userId: string) => mockApi.getAppointments(userId),
+  async (userId, { extra }) => extra.api.getAppointments(userId),
 );
 
-export const createAppointment = createAsyncThunk(
+const createAppointment = createAsyncThunk(
   "appointments/createAppointment",
-  async (payload: Omit<Appointment, "id" | "status">) => {
-    return mockApi.createAppointment(payload);
-  },
+  async (payload, { extra }) => extra.api.createAppointment(payload),
 );
 
 const appointmentsSlice = createSlice({
   name: "appointments",
-  initialState,
+  initialState: {
+    items: [],
+    ...createAsyncState(),
+    // Dedicated mutation state keeps form-submit UX independent from list loading.
+    ...createMutationState("createStatus"),
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -44,7 +36,10 @@ const appointmentsSlice = createSlice({
       })
       .addCase(fetchAppointments.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Failed to fetch appointments";
+        state.error = getActionErrorMessage(
+          action,
+          "Failed to fetch appointments",
+        );
       })
       .addCase(createAppointment.pending, (state) => {
         state.createStatus = "loading";
@@ -56,9 +51,16 @@ const appointmentsSlice = createSlice({
       })
       .addCase(createAppointment.rejected, (state, action) => {
         state.createStatus = "failed";
-        state.error = action.error.message ?? "Failed to create appointment";
+        state.error = getActionErrorMessage(
+          action,
+          "Failed to create appointment",
+        );
       });
   },
 });
 
-export default appointmentsSlice.reducer;
+module.exports = {
+  appointmentsReducer: appointmentsSlice.reducer,
+  createAppointment,
+  fetchAppointments,
+};

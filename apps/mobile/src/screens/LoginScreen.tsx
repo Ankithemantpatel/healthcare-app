@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { useAppDispatch } from "../redux/hooks";
-import { loginUser, registerUser } from "../redux/authSlice";
+import { loginUser, registerUser } from "shared/redux";
+import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
 import { InputField, PrimaryButton } from "./ui";
 

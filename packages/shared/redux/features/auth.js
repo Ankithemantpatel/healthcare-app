@@ -1,50 +1,35 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { RegisterPayload, UserProfile, mockApi } from "../services/mockApi";
+const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const { getActionErrorMessage } = require("../core/stateHelpers");
 
-interface AuthState {
-  user: UserProfile | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  status: "idle",
-  error: null,
-};
-
-export const initializeAuth = createAsyncThunk(
+const initializeAuth = createAsyncThunk(
   "auth/initializeAuth",
-  async () => {
-    return mockApi.getSession();
-  },
+  async (_, { extra }) => extra.api.getSession(),
 );
 
-export const loginUser = createAsyncThunk(
+const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password }: { username: string; password: string }) => {
-    return mockApi.login(username, password);
-  },
+  async ({ username, password }, { extra }) =>
+    extra.api.login(username, password),
 );
 
-export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
-  await mockApi.logout();
-});
-
-export const registerUser = createAsyncThunk(
+const registerUser = createAsyncThunk(
   "auth/registerUser",
-  async (payload: RegisterPayload) => {
-    return mockApi.register(payload);
-  },
+  async (payload, { extra }) => extra.api.register(payload),
 );
+
+const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { extra }) => {
+  await extra.api.logout();
+});
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    user: null,
+    token: null,
+    isAuthenticated: false,
+    status: "idle",
+    error: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -61,7 +46,10 @@ const authSlice = createSlice({
       })
       .addCase(initializeAuth.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Failed to initialize auth";
+        state.error = getActionErrorMessage(
+          action,
+          "Failed to initialize auth",
+        );
       })
       .addCase(loginUser.pending, (state) => {
         state.status = "loading";
@@ -75,7 +63,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Login failed";
+        state.error = getActionErrorMessage(action, "Login failed");
         state.isAuthenticated = false;
       })
       .addCase(registerUser.pending, (state) => {
@@ -90,7 +78,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Registration failed";
+        state.error = getActionErrorMessage(action, "Registration failed");
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
@@ -101,4 +89,10 @@ const authSlice = createSlice({
   },
 });
 
-export default authSlice.reducer;
+module.exports = {
+  authReducer: authSlice.reducer,
+  initializeAuth,
+  loginUser,
+  logoutUser,
+  registerUser,
+};

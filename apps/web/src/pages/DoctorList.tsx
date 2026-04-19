@@ -1,6 +1,6 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fetchDoctors } from "../redux/doctorsSlice";
+import { fetchDoctors } from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const DoctorList: React.FC = () => {
   const dispatch = useAppDispatch();

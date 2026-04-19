@@ -141,7 +141,7 @@ const seedOrders = [
           requiresPrescription: false,
           inStock: true,
           image:
-            "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=300&q=60",
         },
         quantity: 2,
       },
@@ -166,7 +166,7 @@ const seedOrders = [
           requiresPrescription: true,
           inStock: true,
           image:
-            "https://images.unsplash.com/photo-1631549916768-4119b4123a46?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1631549916768-4119b4123a46?auto=format&fit=crop&w=300&q=60",
         },
         quantity: 1,
       },
@@ -219,9 +219,108 @@ const medicineIngredients = [
   "Insulin",
   "Salbutamol",
   "Budesonide",
+  "Levamisole",
+  "Piperazine",
+  "Mebendazole",
+  "Albendazole",
+  "Nitazoxanide",
+  "Cimetidine",
+  "Famotidine",
+  "Omeprazole",
+  "Lansoprazole",
+  "Esomeprazole",
+  "Ranitidine",
+  "Sucralfate",
+  "Misoprostol",
+  "Bisacodyl",
+  "Lactulose",
+  "Sorbitol",
+  "Docusate",
+  "Senna",
+  "Psyllium",
+  "Loperamide",
+  "Diphenoxylate",
+  "Atropine",
+  "Morphine",
+  "Codeine",
+  "Tramadol",
+  "Paracetamol-Tramadol",
+  "Diclofenac",
+  "Ketorolac",
+  "Meloxicam",
+  "Piroxicam",
+  "Indomethacin",
+  "Naproxen",
+  "Nimesulide",
+  "Celecoxib",
+  "Rofecoxib",
+  "Etoricoxib",
+  "Lumiracoxib",
+  "Amtolmetin",
+  "Aceclofenac",
+  "Tiaprofenic",
+  "Suprofen",
+  "Fenoprofen",
+  "Flurbiprofen",
+  "Ibuprofen-Paracetamol",
+  "Ibuprofen-Codeine",
+  "Acetaminophen",
+  "Aspirin-Paracetamol",
+  "Aspirin-Caffeine",
+  "Cafergot",
+  "Ergotamine",
+  "Methysergide",
+  "Sumatriptan",
+  "Zolmitriptan",
+  "Naratriptan",
+  "Rizatriptan",
+  "Almotriptan",
+  "Eletriptan",
+  "Frovatriptan",
+  "Propranolol",
+  "Metoprolol",
+  "Atenolol",
+  "Bisoprolol",
+  "Carvedilol",
+  "Labetalol",
+  "Nebivolol",
+  "Acebutolol",
+  "Pindolol",
+  "Timolol",
+  "Diltiazem",
+  "Verapamil",
+  "Nifedipine",
+  "Amlodipine-Atorvastatin",
+  "Lisinopril",
+  "Enalapril",
+  "Ramipril",
+  "Perindopril",
+  "Quinapril",
+  "Captopril",
 ];
 
-const medicineStrengths = ["250mg", "500mg", "650mg", "10mg", "20mg"];
+const medicineStrengths = [
+  "50mg",
+  "100mg",
+  "150mg",
+  "200mg",
+  "250mg",
+  "300mg",
+  "400mg",
+  "500mg",
+  "600mg",
+  "650mg",
+  "750mg",
+  "800mg",
+  "1000mg",
+  "5mg",
+  "10mg",
+  "15mg",
+  "20mg",
+  "25mg",
+  "30mg",
+  "40mg",
+];
 const medicineBrands = [
   "HealthPlus",
   "MediCore",
@@ -255,12 +354,12 @@ const medicinePackSizes = [
   "1 inhaler",
 ];
 const medicineImages = [
-  "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1631549916768-4119b4123a46?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1573883431205-98b5f10aaedb?auto=format&fit=crop&w=600&q=80",
-  "https://images.unsplash.com/photo-1628771065518-0d82f1938462?auto=format&fit=crop&w=600&q=80",
+  "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=300&q=60",
+  "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=300&q=60",
+  "https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?auto=format&fit=crop&w=300&q=60",
+  "https://images.unsplash.com/photo-1631549916768-4119b4123a46?auto=format&fit=crop&w=300&q=60",
+  "https://images.unsplash.com/photo-1573883431205-98b5f10aaedb?auto=format&fit=crop&w=300&q=60",
+  "https://images.unsplash.com/photo-1628771065518-0d82f1938462?auto=format&fit=crop&w=300&q=60",
 ];
 const prescriptionCategories = new Set([
   "Antibiotics",
@@ -271,48 +370,41 @@ const prescriptionCategories = new Set([
 
 const generateMedicinesCatalog = () => {
   const medicines = [];
-  let idNum = 1;
+  const totalMedicines = 2000;
 
-  for (
-    let ingredientIndex = 0;
-    ingredientIndex < medicineIngredients.length;
-    ingredientIndex += 1
-  ) {
-    for (
-      let strengthIndex = 0;
-      strengthIndex < medicineStrengths.length;
-      strengthIndex += 1
-    ) {
-      const category =
-        medicineCategories[
-          (ingredientIndex + strengthIndex) % medicineCategories.length
-        ];
-      const priceBase = 4 + ((ingredientIndex * 7 + strengthIndex * 5) % 42);
-      const price = Number((priceBase + strengthIndex * 0.49).toFixed(2));
+  for (let idNum = 1; idNum <= totalMedicines; idNum += 1) {
+    const ingredientIndex = (idNum - 1) % medicineIngredients.length;
+    const strengthIndex =
+      Math.floor((idNum - 1) / medicineIngredients.length) %
+      medicineStrengths.length;
 
-      medicines.push({
-        id: `med${String(idNum).padStart(3, "0")}`,
-        name: `${medicineIngredients[ingredientIndex]} ${medicineStrengths[strengthIndex]}`,
-        brand:
-          medicineBrands[
-            (ingredientIndex + strengthIndex) % medicineBrands.length
-          ],
-        category,
-        price,
-        packSize:
-          medicinePackSizes[
-            (ingredientIndex * 2 + strengthIndex) % medicinePackSizes.length
-          ],
-        requiresPrescription: prescriptionCategories.has(category),
-        inStock: idNum % 11 !== 0,
-        image:
-          medicineImages[
-            (ingredientIndex + strengthIndex) % medicineImages.length
-          ],
-      });
+    const category =
+      medicineCategories[
+        (ingredientIndex + strengthIndex) % medicineCategories.length
+      ];
+    const priceBase = 4 + ((ingredientIndex * 7 + strengthIndex * 5) % 42);
+    const price = Number((priceBase + strengthIndex * 0.49).toFixed(2));
 
-      idNum += 1;
-    }
+    medicines.push({
+      id: `med${String(idNum).padStart(4, "0")}`,
+      name: `${medicineIngredients[ingredientIndex]} ${medicineStrengths[strengthIndex]}`,
+      brand:
+        medicineBrands[
+          (ingredientIndex + strengthIndex) % medicineBrands.length
+        ],
+      category,
+      price,
+      packSize:
+        medicinePackSizes[
+          (ingredientIndex * 2 + strengthIndex) % medicinePackSizes.length
+        ],
+      requiresPrescription: prescriptionCategories.has(category),
+      inStock: idNum % 11 !== 0,
+      image:
+        medicineImages[
+          (ingredientIndex + strengthIndex) % medicineImages.length
+        ],
+    });
   }
 
   return medicines;

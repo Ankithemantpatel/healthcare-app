@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   addToCart,
   clearCart,
   decrementCartItem,
   removeFromCart,
-} from "../redux/medicinesSlice";
+} from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const MedicinesCheckout: React.FC = () => {
   const dispatch = useAppDispatch();

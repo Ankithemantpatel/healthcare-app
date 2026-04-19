@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fetchProfile, saveProfile } from "../redux/profileSlice";
+import { fetchProfile, saveProfile } from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const PatientProfile: React.FC = () => {
   const dispatch = useAppDispatch();

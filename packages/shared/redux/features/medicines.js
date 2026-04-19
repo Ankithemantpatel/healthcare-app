@@ -1,60 +1,53 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
-import type { CartItem, Medicine } from "shared";
-import { mockApi } from "../services/mockApi";
+const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const {
+  createAsyncState,
+  getActionErrorMessage,
+} = require("../core/stateHelpers");
 
-interface MedicinesState {
-  catalog: Medicine[];
-  cart: CartItem[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: MedicinesState = {
-  catalog: [],
-  cart: [],
-  status: "idle",
-  error: null,
-};
-
-export const fetchMedicines = createAsyncThunk(
+const fetchMedicines = createAsyncThunk(
   "medicines/fetchMedicines",
-  async () => mockApi.getMedicines(),
+  async (_, { extra }) => extra.api.getMedicines(),
 );
 
 const medicinesSlice = createSlice({
   name: "medicines",
-  initialState,
+  initialState: {
+    catalog: [],
+    cart: [],
+    ...createAsyncState(),
+  },
   reducers: {
-    addToCart(state, action: PayloadAction<Medicine>) {
+    addToCart(state, action) {
       const existing = state.cart.find(
         (item) => item.medicine.id === action.payload.id,
       );
+
       if (existing) {
         existing.quantity += 1;
-      } else {
-        state.cart.push({ medicine: action.payload, quantity: 1 });
+        return;
       }
+
+      state.cart.push({ medicine: action.payload, quantity: 1 });
     },
-    decrementCartItem(state, action: PayloadAction<string>) {
+    decrementCartItem(state, action) {
       const existing = state.cart.find(
         (item) => item.medicine.id === action.payload,
       );
+
       if (!existing) {
         return;
       }
+
       if (existing.quantity <= 1) {
         state.cart = state.cart.filter(
           (item) => item.medicine.id !== action.payload,
         );
-      } else {
-        existing.quantity -= 1;
+        return;
       }
+
+      existing.quantity -= 1;
     },
-    removeFromCart(state, action: PayloadAction<string>) {
+    removeFromCart(state, action) {
       state.cart = state.cart.filter(
         (item) => item.medicine.id !== action.payload,
       );
@@ -75,12 +68,19 @@ const medicinesSlice = createSlice({
       })
       .addCase(fetchMedicines.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Failed to load medicines";
+        state.error = getActionErrorMessage(action, "Failed to load medicines");
       });
   },
 });
 
-export const { addToCart, decrementCartItem, removeFromCart, clearCart } =
+const { addToCart, clearCart, decrementCartItem, removeFromCart } =
   medicinesSlice.actions;
 
-export default medicinesSlice.reducer;
+module.exports = {
+  addToCart,
+  clearCart,
+  decrementCartItem,
+  fetchMedicines,
+  medicinesReducer: medicinesSlice.reducer,
+  removeFromCart,
+};

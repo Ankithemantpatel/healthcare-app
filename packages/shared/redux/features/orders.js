@@ -1,35 +1,27 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import type { MedicineOrder } from "shared";
-import { mockApi } from "../services/mockApi";
+const { createAsyncThunk, createSlice } = require("@reduxjs/toolkit");
+const {
+  createAsyncState,
+  createMutationState,
+  getActionErrorMessage,
+} = require("../core/stateHelpers");
 
-interface OrdersState {
-  items: MedicineOrder[];
-  status: "idle" | "loading" | "succeeded" | "failed";
-  placeStatus: "idle" | "loading" | "succeeded" | "failed";
-  error: string | null;
-}
-
-const initialState: OrdersState = {
-  items: [],
-  status: "idle",
-  placeStatus: "idle",
-  error: null,
-};
-
-export const fetchOrders = createAsyncThunk(
+const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
-  async (userId: string) => mockApi.getOrders(userId),
+  async (userId, { extra }) => extra.api.getOrders(userId),
 );
 
-export const placeOrder = createAsyncThunk(
+const placeOrder = createAsyncThunk(
   "orders/placeOrder",
-  async (payload: Omit<MedicineOrder, "id" | "status" | "placedAt" | "eta">) =>
-    mockApi.placeOrder(payload),
+  async (payload, { extra }) => extra.api.placeOrder(payload),
 );
 
 const ordersSlice = createSlice({
   name: "orders",
-  initialState,
+  initialState: {
+    items: [],
+    ...createAsyncState(),
+    ...createMutationState("placeStatus"),
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -43,7 +35,7 @@ const ordersSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message ?? "Failed to fetch orders";
+        state.error = getActionErrorMessage(action, "Failed to fetch orders");
       })
       .addCase(placeOrder.pending, (state) => {
         state.placeStatus = "loading";
@@ -55,9 +47,13 @@ const ordersSlice = createSlice({
       })
       .addCase(placeOrder.rejected, (state, action) => {
         state.placeStatus = "failed";
-        state.error = action.error.message ?? "Failed to place order";
+        state.error = getActionErrorMessage(action, "Failed to place order");
       });
   },
 });
 
-export default ordersSlice.reducer;
+module.exports = {
+  fetchOrders,
+  ordersReducer: ordersSlice.reducer,
+  placeOrder,
+};

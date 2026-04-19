@@ -1,0 +1,3 @@
+// Simple placeholder for avatars and medicine images
+// Place your own image here for production
+module.exports = require('./default-placeholder.png');

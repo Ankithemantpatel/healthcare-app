@@ -1,8 +1,8 @@
 import React from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import type { Doctor } from "shared";
-import { useAppDispatch } from "../redux/hooks";
-import { createAppointment } from "../redux/appointmentsSlice";
+import { createAppointment } from "shared/redux";
+import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
 import { InputField, Pill, PrimaryButton } from "./ui";
 

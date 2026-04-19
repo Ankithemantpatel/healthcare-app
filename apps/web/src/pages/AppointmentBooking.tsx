@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fetchDoctors } from "../redux/doctorsSlice";
 import {
   createAppointment,
   fetchAppointments,
-} from "../redux/appointmentsSlice";
-import { loginUser, registerUser } from "../redux/authSlice";
+  fetchDoctors,
+  loginUser,
+  registerUser,
+} from "shared/redux";
+import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
 const AppointmentBooking: React.FC = () => {
   const dispatch = useAppDispatch();

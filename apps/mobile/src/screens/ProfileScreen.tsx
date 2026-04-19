@@ -1,8 +1,8 @@
 import React from "react";
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import type { UserProfile } from "shared";
-import { useAppDispatch } from "../redux/hooks";
-import { saveProfile } from "../redux/profileSlice";
+import { saveProfile } from "shared/redux";
+import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
 import { InputField, PrimaryButton } from "./ui";
 
