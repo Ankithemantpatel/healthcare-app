@@ -43,3 +43,7 @@ apps/mobile/android/build/
 # IDE
 .vscode/
 .idea/
+
+# local docs
+*.md
+*.pdf
