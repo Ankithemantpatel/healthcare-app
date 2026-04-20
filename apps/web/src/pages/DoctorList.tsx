@@ -1,17 +1,17 @@
-import React from "react";
+import { type FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { sharedUiCopy } from "shared";
 import { fetchDoctors } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import RemoteImage from "../components/RemoteImage";
 
-const DoctorList: React.FC = () => {
+const DoctorList: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const doctors = useAppSelector((state) => state.doctors.items);
   const status = useAppSelector((state) => state.doctors.status);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (status === "idle") {
       dispatch(fetchDoctors());
     }

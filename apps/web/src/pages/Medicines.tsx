@@ -1,4 +1,4 @@
-import React from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   filterMedicinesCatalog,
@@ -9,19 +9,19 @@ import { addToCart, decrementCartItem, fetchMedicines } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import RemoteImage from "../components/RemoteImage";
 
-const Medicines: React.FC = () => {
+const Medicines: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const medicines = useAppSelector((state) => state.medicines.catalog);
   const cart = useAppSelector((state) => state.medicines.cart);
   const status = useAppSelector((state) => state.medicines.status);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [activeCategory, setActiveCategory] = React.useState("All");
-  const [sortBy, setSortBy] = React.useState<MedicineSortOption>("popular");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sortBy, setSortBy] = useState<MedicineSortOption>("popular");
   const searchInputId = "medicine-search";
   const sortSelectId = "medicine-sort";
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (status === "idle") {
       dispatch(fetchMedicines());
     }
@@ -33,18 +33,18 @@ const Medicines: React.FC = () => {
     0,
   );
   const totalAmountLabel = `$${totalAmount.toFixed(2)}`;
-  const cartQuantityByMedicineId = React.useMemo(
+  const cartQuantityByMedicineId = useMemo(
     () =>
       Object.fromEntries(cart.map((item) => [item.medicine.id, item.quantity])),
     [cart],
   );
 
-  const categories = React.useMemo(
+  const categories = useMemo(
     () => getMedicineCategories(medicines),
     [medicines],
   );
 
-  const filteredMedicines = React.useMemo(
+  const filteredMedicines = useMemo(
     () =>
       filterMedicinesCatalog(medicines, searchQuery, activeCategory, sortBy),
     [activeCategory, medicines, searchQuery, sortBy],

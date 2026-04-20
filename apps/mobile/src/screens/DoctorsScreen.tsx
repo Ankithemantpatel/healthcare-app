@@ -1,8 +1,8 @@
-import React from "react";
+import { useState } from "react";
 import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
 import type { Doctor } from "shared";
 import type { SharedStyles } from "./types";
-import { PrimaryButton } from "./ui";
+import { PrimaryButton } from "../components";
 
 export const DoctorsScreenView = ({
   doctors,
@@ -27,7 +27,7 @@ export const DoctorsScreenView = ({
     </View>
     {status === "loading" ? <ActivityIndicator color="#67e8f9" /> : null}
     {doctors.map((doctor) => {
-      const [error, setError] = React.useState(false);
+      const [error, setError] = useState(false);
       return (
         <View key={doctor.id} style={styles.doctorCard}>
           <Image

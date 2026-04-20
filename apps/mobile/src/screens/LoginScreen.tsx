@@ -1,10 +1,10 @@
-import React from "react";
+import { useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { sharedUiCopy as CONSTANTS } from "shared";
 import { loginUser, registerUser } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
-import { InputField, PrimaryButton } from "./ui";
+import { InputField, PrimaryButton } from "../components";
 
 export const LoginScreenView = ({
   authStatus,
@@ -18,17 +18,17 @@ export const LoginScreenView = ({
   styles: SharedStyles;
 }) => {
   const dispatch = useAppDispatch();
-  const [mode, setMode] = React.useState<"login" | "register">("login");
-  const [username, setUsername] = React.useState(
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [username, setUsername] = useState(
     CONSTANTS.auth.demoAccounts.patient.username,
   );
-  const [password, setPassword] = React.useState(
+  const [password, setPassword] = useState(
     CONSTANTS.auth.demoAccounts.patient.password,
   );
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [phone, setPhone] = React.useState("");
-  const [address, setAddress] = React.useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
 
   const handleSubmit = async () => {
     try {

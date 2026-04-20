@@ -1,7 +1,6 @@
-import React from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import type { SharedStyles } from "./types";
-import { StatCard } from "./ui";
+import { StatCard } from "../components";
 
 export const DashboardScreenView = ({
   userName,

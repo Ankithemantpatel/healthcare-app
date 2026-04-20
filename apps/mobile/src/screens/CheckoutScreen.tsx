@@ -1,4 +1,3 @@
-import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import type { CartItem } from "shared";
 import {
@@ -10,7 +9,7 @@ import {
 } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
-import { PrimaryButton, SummaryRow } from "./ui";
+import { PrimaryButton, SummaryRow } from "../components";
 
 export const CheckoutScreenView = ({
   userId,

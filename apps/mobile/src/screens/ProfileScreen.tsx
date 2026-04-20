@@ -1,10 +1,10 @@
-import React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
 import { sharedUiCopy, type UserProfile } from "shared";
 import { saveProfile } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
-import { InputField, PrimaryButton } from "./ui";
+import { InputField, PrimaryButton } from "../components";
 
 export const ProfileScreenView = ({
   user,
@@ -20,13 +20,13 @@ export const ProfileScreenView = ({
   styles: SharedStyles;
 }) => {
   const dispatch = useAppDispatch();
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [phone, setPhone] = React.useState("");
-  const [address, setAddress] = React.useState("");
-  const [condition, setCondition] = React.useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [condition, setCondition] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (profile) {
       setName(profile.name);
       setEmail(profile.email);
@@ -36,7 +36,7 @@ export const ProfileScreenView = ({
     }
   }, [profile]);
 
-  const trimmedProfile = React.useMemo(
+  const trimmedProfile = useMemo(
     () => ({
       name: name.trim(),
       email: email.trim(),

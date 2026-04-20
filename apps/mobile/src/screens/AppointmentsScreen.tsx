@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
   Alert,
@@ -13,7 +13,7 @@ import type { Doctor } from "shared";
 import { createAppointment } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
-import { InputField, Pill, PrimaryButton } from "./ui";
+import { InputField, Pill, PrimaryButton } from "../components";
 
 const createInitialAppointmentDate = () => {
   const value = new Date();
@@ -49,6 +49,10 @@ const formatAppointmentTimeLabel = (value: Date) =>
     minute: "2-digit",
   });
 
+const showAlert = (title: string, message: string) => {
+  Alert.alert(title, message);
+};
+
 export const AppointmentsScreenView = ({
   doctors,
   userId,
@@ -75,27 +79,27 @@ export const AppointmentsScreenView = ({
   styles: SharedStyles;
 }) => {
   const dispatch = useAppDispatch();
-  const [doctor, setDoctor] = React.useState(prefilledDoctor);
-  const [type, setType] = React.useState("Consultation");
-  const [appointmentDateTime, setAppointmentDateTime] = React.useState(
+  const [doctor, setDoctor] = useState(prefilledDoctor);
+  const [type, setType] = useState("Consultation");
+  const [appointmentDateTime, setAppointmentDateTime] = useState(
     createInitialAppointmentDate,
   );
-  const [showDatePicker, setShowDatePicker] = React.useState(false);
-  const [showTimePicker, setShowTimePicker] = React.useState(false);
-  const [reason, setReason] = React.useState("");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [reason, setReason] = useState("");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (prefilledDoctor) {
       setDoctor(prefilledDoctor);
     }
   }, [prefilledDoctor]);
 
-  const closePickers = React.useCallback(() => {
+  const closePickers = useCallback(() => {
     setShowDatePicker(false);
     setShowTimePicker(false);
   }, []);
 
-  const togglePicker = React.useCallback((target: "date" | "time") => {
+  const togglePicker = useCallback((target: "date" | "time") => {
     if (target === "date") {
       setShowTimePicker(false);
       setShowDatePicker((current) => !current);
@@ -108,35 +112,76 @@ export const AppointmentsScreenView = ({
 
   const pickerMode = showDatePicker ? "date" : showTimePicker ? "time" : null;
 
-  const handleSubmit = async () => {
+  const validateInput = () => {
     if (!userId) {
-      Alert.alert(
-        "Login required",
-        "Please login to confirm your appointment.",
-      );
+      showAlert("Login required", "Please login to confirm your appointment.");
       onRequireAuth();
-      return;
+      return false;
     }
-    if (!(doctor && reason.trim())) {
-      Alert.alert("Missing details", "Complete all appointment details first.");
+
+    if (!doctor) {
+      showAlert("Missing details", "Please select a doctor.");
+      return false;
+    }
+
+    if (!reason.trim()) {
+      showAlert(
+        "Missing details",
+        "Please provide a reason for the appointment.",
+      );
+      return false;
+    }
+
+    if (reason.trim().length < 10) {
+      showAlert(
+        "Invalid reason",
+        "Reason must be at least 10 characters long.",
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (createStatus === "loading") {
       return;
     }
 
-    await dispatch(
-      createAppointment({
-        userId,
-        doctor,
-        date: formatAppointmentDate(appointmentDateTime),
-        time: formatAppointmentTime(appointmentDateTime),
-        type,
-        reason: reason.trim(),
-      }),
-    ).unwrap();
-    setReason("");
-    Alert.alert(
-      "Appointment created",
-      "Your appointment request has been saved.",
-    );
+    if (!validateInput()) {
+      return;
+    }
+
+    const appointmentPayload = {
+      userId,
+      doctor,
+      date: formatAppointmentDate(appointmentDateTime),
+      time: formatAppointmentTime(appointmentDateTime),
+      type,
+      reason: reason.trim(),
+    };
+
+    try {
+      console.log("Submitting appointment:", appointmentPayload);
+
+      const result = await dispatch(
+        createAppointment(appointmentPayload),
+      ).unwrap();
+
+      console.log("Appointment created successfully:", result);
+
+      setReason("");
+      showAlert(
+        "Appointment created",
+        "Your appointment request has been saved.",
+      );
+    } catch (error) {
+      showAlert(
+        "Error",
+        "Failed to create appointment. Please try again later.",
+      );
+      console.error("Error creating appointment:", error);
+    }
   };
 
   return (

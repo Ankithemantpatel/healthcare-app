@@ -1,4 +1,4 @@
-import React from "react";
+import { type FC } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { sharedUiCopy } from "shared";
 import {
@@ -10,7 +10,7 @@ import {
 } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
-const MedicinesCheckout: React.FC = () => {
+const MedicinesCheckout: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const cart = useAppSelector((state) => state.medicines.cart);

@@ -1,26 +1,52 @@
-import React from "react";
 import {
   ActivityIndicator,
   Alert,
-  NativeModules,
   Pressable,
   ScrollView,
-  Share,
   Text,
   View,
 } from "react-native";
+import * as FileSystem from "expo-file-system";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import { sharedUiCopy, type PrescriptionRecord } from "shared";
 import type { SharedStyles } from "./types";
 
 export const HealthRecordsScreenView = ({
   records,
   status,
+  patientName,
   styles,
 }: {
   records: PrescriptionRecord[];
   status: string;
+  patientName: string;
   styles: SharedStyles;
 }) => {
+  const slugifySegment = (value: string) =>
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "unknown";
+
+  const getDoctorFirstName = (doctorName: string) => {
+    const normalized = doctorName.replace(/^dr\.?\s+/i, "").trim();
+    return normalized.split(/\s+/)[0] || "doctor";
+  };
+
+  const buildPrescriptionFileName = (record: PrescriptionRecord) =>
+    `${slugifySegment(patientName)}-${slugifySegment(record.date)}-${slugifySegment(getDoctorFirstName(record.doctor))}`;
+
+  const movePdfToNamedPath = async (filePath: string, fileName: string) => {
+    const targetPath = `${FileSystem.cacheDirectory}${fileName}.pdf`;
+    await FileSystem.copyAsync({
+      from: filePath,
+      to: targetPath,
+    });
+    return targetPath;
+  };
+
   const buildPrescriptionBlock = (record: PrescriptionRecord) => {
     const medicines = record.medicines
       .map((medicine) => `<li>${medicine}</li>`)
@@ -98,37 +124,20 @@ export const HealthRecordsScreenView = ({
   };
 
   const convertHtmlToPdf = async (html: string, fileName: string) => {
-    const htmlToPdf = NativeModules.HtmlToPdf as
-      | {
-          convert: (options: {
-            html: string;
-            fileName: string;
-            directory: string;
-            base64: boolean;
-          }) => Promise<{ filePath?: string }>;
-        }
-      | undefined;
-
-    if (!htmlToPdf || typeof htmlToPdf.convert !== "function") {
-      throw new Error("Native HtmlToPdf module is not available");
-    }
-
-    return htmlToPdf.convert({
+    const { uri } = await Print.printToFileAsync({
       html,
-      fileName,
-      directory: "Documents",
       base64: false,
     });
+    const renamedPath = await movePdfToNamedPath(uri, fileName);
+    return { filePath: renamedPath };
   };
 
   const sharePdf = async (filePath: string) => {
-    const fileUrl = filePath.startsWith("file://")
-      ? filePath
-      : `file://${filePath}`;
-
-    await Share.share({
-      url: fileUrl,
-      title: sharedUiCopy.healthRecords.shareTitle,
+    if (!(await Sharing.isAvailableAsync())) {
+      throw new Error("Sharing is not available on this device");
+    }
+    await Sharing.shareAsync(filePath, {
+      dialogTitle: sharedUiCopy.healthRecords.shareTitle,
     });
   };
 
@@ -136,7 +145,7 @@ export const HealthRecordsScreenView = ({
     try {
       const file = await convertHtmlToPdf(
         buildPrescriptionHtml(record),
-        `${sharedUiCopy.healthRecords.document.singleFilePrefix}-${record.id}`,
+        buildPrescriptionFileName(record),
       );
       if (!file.filePath) {
         throw new Error("No output path");

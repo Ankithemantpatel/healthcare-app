@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Pressable,
   SafeAreaView,
@@ -101,20 +101,20 @@ const AppShell = () => {
   const orders = useAppSelector((state) => state.orders.items);
   const ordersStatus = useAppSelector((state) => state.orders.status);
 
-  const [route, setRoute] = React.useState<RouteKey>("login");
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [prefilledDoctor, setPrefilledDoctor] = React.useState("");
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [activeCategory, setActiveCategory] = React.useState("All");
-  const [sortBy, setSortBy] = React.useState<MedicineSortOption>("popular");
+  const [route, setRoute] = useState<RouteKey>("login");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [prefilledDoctor, setPrefilledDoctor] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [sortBy, setSortBy] = useState<MedicineSortOption>("popular");
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(initializeAuth());
     dispatch(fetchDoctors());
     dispatch(fetchMedicines());
   }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (auth.user?.id) {
       dispatch(fetchAppointments(auth.user.id));
       dispatch(fetchProfile(auth.user.id));
@@ -126,7 +126,7 @@ const AppShell = () => {
     }
   }, [auth.user?.id, dispatch, route]);
 
-  const navRoutes = React.useMemo(
+  const navRoutes = useMemo(
     () =>
       auth.isAuthenticated
         ? routes
@@ -140,7 +140,7 @@ const AppShell = () => {
     [auth.isAuthenticated],
   );
 
-  const navigate = React.useCallback(
+  const navigate = useCallback(
     (nextRoute: RouteKey) => {
       setMenuOpen(false);
       if (nextRoute === "login" && auth.isAuthenticated) {
@@ -162,16 +162,16 @@ const AppShell = () => {
     (sum, item) => sum + item.quantity * item.medicine.price,
     0,
   );
-  const categories = React.useMemo(
+  const categories = useMemo(
     () => getMedicineCategories(medicines),
     [medicines],
   );
-  const filteredMedicines = React.useMemo(
+  const filteredMedicines = useMemo(
     () =>
       filterMedicinesCatalog(medicines, searchQuery, activeCategory, sortBy),
     [activeCategory, medicines, searchQuery, sortBy],
   );
-  const cartQuantityById = React.useMemo(
+  const cartQuantityById = useMemo(
     () =>
       Object.fromEntries(cart.map((item) => [item.medicine.id, item.quantity])),
     [cart],
@@ -326,6 +326,7 @@ const AppShell = () => {
           <HealthRecordsScreenView
             records={healthRecords}
             status={healthRecordsStatus}
+            patientName={auth.user?.name ?? profile?.name ?? "patient"}
             styles={styles}
           />
         )}

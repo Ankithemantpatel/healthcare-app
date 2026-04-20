@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { sharedUiCopy } from "shared";
 import {
@@ -10,7 +10,7 @@ import {
 } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
-const AppointmentBooking: React.FC = () => {
+const AppointmentBooking: FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const user = useAppSelector((state) => state.auth.user);
@@ -37,14 +37,14 @@ const AppointmentBooking: React.FC = () => {
       ? ((location.state as { selectedDoctor?: string }).selectedDoctor ?? "")
       : "";
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchDoctors());
     if (user?.id) {
       dispatch(fetchAppointments(user.id));
     }
   }, [dispatch, user?.id]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!locationDoctor) {
       return;
     }

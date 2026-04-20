@@ -1,4 +1,3 @@
-import React from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { sharedUiCopy as CONSTANTS, type MedicineOrder } from "shared";
 import type { SharedStyles } from "./types";

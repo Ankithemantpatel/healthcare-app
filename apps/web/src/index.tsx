@@ -1,4 +1,4 @@
-import React from "react";
+import { StrictMode, type FC, type ReactNode, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -26,9 +26,7 @@ import MedicinesCheckout from "./pages/MedicinesCheckout";
 import HealthRecords from "./pages/HealthRecords";
 import Orders from "./pages/Orders";
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const ProtectedRoute: FC<{ children: ReactNode }> = ({ children }) => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const authStatus = useAppSelector((state) => state.auth.status);
 
@@ -48,13 +46,13 @@ const App = () => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const userId = useAppSelector((state) => state.auth.user?.id);
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(initializeAuth());
     dispatch(fetchDoctors());
     dispatch(fetchMedicines());
   }, [dispatch]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!userId) {
       return;
     }
@@ -129,9 +127,9 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 root.render(
-  <React.StrictMode>
+  <StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>,
+  </StrictMode>,
 );

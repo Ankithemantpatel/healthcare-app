@@ -1,10 +1,10 @@
-import React from "react";
+import { type FC } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { sharedUiCopy } from "shared";
 import { logoutUser } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
-const Navbar: React.FC = () => {
+const Navbar: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);

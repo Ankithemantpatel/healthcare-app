@@ -1,4 +1,4 @@
-import React from "react";
+import { type FC } from "react";
 import { sharedUiCopy, type PrescriptionRecord } from "shared";
 import { useAppSelector } from "shared/redux/hooks";
 
@@ -81,7 +81,7 @@ const downloadHtmlDocument = (
   URL.revokeObjectURL(url);
 };
 
-const HealthRecords: React.FC = () => {
+const HealthRecords: FC = () => {
   const records = useAppSelector((state) => state.healthRecords.items);
   const status = useAppSelector((state) => state.healthRecords.status);
   const user = useAppSelector((state) => state.auth.user);

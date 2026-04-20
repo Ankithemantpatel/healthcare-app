@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -13,46 +13,44 @@ import type { Medicine, MedicineSortOption } from "shared";
 import { addToCart, decrementCartItem } from "shared/redux";
 import { useAppDispatch } from "shared/redux/hooks";
 import type { SharedStyles } from "./types";
-import { Pill, PrimaryButton } from "./ui";
+import { Pill, PrimaryButton } from "../components";
 
 // Optimized image loading with caching and progressive rendering
-const MedicineImage = React.memo(
-  ({ uri, style }: { uri: string; style: any }) => {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-    return (
-      <View style={[style, { backgroundColor: "#f1f5f9" }]}>
-        <Image
-          source={error ? require("../assets/placeholder-avatar.png") : { uri }}
-          style={style}
-          onLoadEnd={() => setLoading(false)}
-          onError={() => setError(true)}
-          progressiveRenderingEnabled={true}
-        />
-        {loading && (
-          <View
-            style={[
-              style,
-              {
-                position: "absolute",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(0,0,0,0.1)",
-              },
-            ]}
-          >
-            <ActivityIndicator size="small" color="#67e8f9" />
-          </View>
-        )}
-      </View>
-    );
-  },
-);
+const MedicineImage = memo(({ uri, style }: { uri: string; style: any }) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  return (
+    <View style={[style, { backgroundColor: "#f1f5f9" }]}>
+      <Image
+        source={error ? require("../assets/placeholder-avatar.png") : { uri }}
+        style={style}
+        onLoadEnd={() => setLoading(false)}
+        onError={() => setError(true)}
+        progressiveRenderingEnabled={true}
+      />
+      {loading && (
+        <View
+          style={[
+            style,
+            {
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.1)",
+            },
+          ]}
+        >
+          <ActivityIndicator size="small" color="#67e8f9" />
+        </View>
+      )}
+    </View>
+  );
+});
 
 MedicineImage.displayName = "MedicineImage";
 
 // Memoized medicine card component for performance
-const MedicineCard = React.memo(
+const MedicineCard = memo(
   ({
     medicine,
     quantity,

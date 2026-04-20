@@ -1,4 +1,4 @@
-import React from "react";
+import { type FC, type ImgHTMLAttributes, useEffect, useState } from "react";
 
 const DEFAULT_FALLBACK_SRC = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
@@ -15,16 +15,13 @@ const DEFAULT_FALLBACK_SRC = `data:image/svg+xml;charset=UTF-8,${encodeURICompon
   </svg>
 `)}`;
 
-type RemoteImageProps = Omit<
-  React.ImgHTMLAttributes<HTMLImageElement>,
-  "src"
-> & {
+type RemoteImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
   src?: string;
   wrapperClassName?: string;
   fallbackSrc?: string;
 };
 
-const RemoteImage: React.FC<RemoteImageProps> = ({
+const RemoteImage: FC<RemoteImageProps> = ({
   src,
   alt,
   className,
@@ -34,10 +31,10 @@ const RemoteImage: React.FC<RemoteImageProps> = ({
   onError,
   ...props
 }) => {
-  const [currentSrc, setCurrentSrc] = React.useState(src || fallbackSrc);
-  const [isLoaded, setIsLoaded] = React.useState(false);
+  const [currentSrc, setCurrentSrc] = useState(src || fallbackSrc);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentSrc(src || fallbackSrc);
     setIsLoaded(false);
   }, [src, fallbackSrc]);

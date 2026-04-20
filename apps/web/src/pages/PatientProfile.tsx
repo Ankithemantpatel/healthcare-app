@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { type FC, useEffect, useMemo, useState } from "react";
 import { sharedUiCopy } from "shared";
 import { fetchProfile, saveProfile } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
-const PatientProfile: React.FC = () => {
+const PatientProfile: FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const profile = useAppSelector((state) => state.profile.data);
@@ -17,13 +17,13 @@ const PatientProfile: React.FC = () => {
   const [condition, setCondition] = useState("");
   const [message, setMessage] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user?.id) {
       dispatch(fetchProfile(user.id));
     }
   }, [dispatch, user?.id]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (profile) {
       setName(profile.name);
       setEmail(profile.email);
@@ -33,7 +33,7 @@ const PatientProfile: React.FC = () => {
     }
   }, [profile]);
 
-  const trimmedProfile = React.useMemo(
+  const trimmedProfile = useMemo(
     () => ({
       name: name.trim(),
       email: email.trim(),

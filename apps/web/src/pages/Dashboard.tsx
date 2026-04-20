@@ -1,8 +1,8 @@
-import React from "react";
+import { type FC, useEffect } from "react";
 import { fetchAppointments, fetchDoctors } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 
-const Dashboard: React.FC = () => {
+const Dashboard: FC = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
   const doctorsCount = useAppSelector((state) => state.doctors.items.length);
@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
     return sorted[0] ?? null;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(fetchDoctors());
     if (user?.id) {
       dispatch(fetchAppointments(user.id));

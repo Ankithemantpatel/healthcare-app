@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { type FC, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { sharedUiCopy } from "shared";
 import { loginUser } from "shared/redux";
 import { useAppDispatch, useAppSelector } from "shared/redux/hooks";
 import RemoteImage from "../components/RemoteImage";
 
-const Login: React.FC = () => {
+const Login: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const status = useAppSelector((state) => state.auth.status);
@@ -24,7 +24,7 @@ const Login: React.FC = () => {
 
   const roleOptions = sharedUiCopy.auth.serviceOptions;
 
-  const applyDemoCredentials = React.useCallback(
+  const applyDemoCredentials = useCallback(
     (nextRole: "patient" | "doctor") => {
       setRole(nextRole);
       setSelectedOption(roleOptions[nextRole][0]);
@@ -41,7 +41,7 @@ const Login: React.FC = () => {
     [roleOptions],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true });
     }

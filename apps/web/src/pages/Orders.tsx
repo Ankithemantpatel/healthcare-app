@@ -1,8 +1,8 @@
-import React from "react";
+import { type FC } from "react";
 import { sharedUiCopy as CONSTANTS } from "shared";
 import { useAppSelector } from "shared/redux/hooks";
 
-const Orders: React.FC = () => {
+const Orders: FC = () => {
   const orders = useAppSelector((state) => state.orders.items);
   const status = useAppSelector((state) => state.orders.status);
   const user = useAppSelector((state) => state.auth.user);
