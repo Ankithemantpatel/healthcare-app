@@ -2,10 +2,6 @@
 
 Monorepo for a healthcare product with React Native mobile and React web apps.
 
-## Interview Documentation
-
-- `INTERVIEW_GUIDE.md`: Full feature walkthrough + code architecture script for interviews
-
 ## Workspace Layout
 
 - `apps/mobile`: React Native app (iOS and Android)
