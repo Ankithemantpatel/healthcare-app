@@ -74,10 +74,10 @@ export const OrdersScreenView = ({
               </Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabelStrong}>
+              <Text style={[styles.summaryLabel, styles.summaryLabelStrong]}>
                 {CONSTANTS.orders.totalLabel}
               </Text>
-              <Text style={styles.summaryValueStrong}>
+              <Text style={[styles.summaryValue, styles.summaryValueStrong]}>
                 ${order.totalAmount.toFixed(2)}
               </Text>
             </View>
